@@ -3,3 +3,10 @@
 ################################################################################
 
 /MCS.FOI.FilePreProcessor/MCS.FOI.FileConversion/obj
+/.vs/slnx.sqlite
+/.vs
+/MCS.FOI.FilePreProcessor/MCS.FOI.CalenderToPDF/bin/Debug/netcoreapp3.1
+/MCS.FOI.FilePreProcessor/MCS.FOI.CalenderToPDF/obj
+/MCS.FOI.FilePreProcessor/MCS.FOI.ExcelToPDF/bin/Debug/netcoreapp3.1
+/MCS.FOI.FilePreProcessor/MCS.FOI.ExcelToPDF/obj
+/MCS.FOI.FilePreProcessor/MCS.FOI.FileConversion/bin/Debug/netcoreapp3.1
