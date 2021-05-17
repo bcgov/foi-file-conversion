@@ -19,7 +19,7 @@ namespace MCS.FOI.CalenderToPDF
             {
                 if (di.Name != "Output")
                 {
-                    dirOutputfix = dirOutput + "\\" + di.Name;
+                    dirOutputfix = dirOutput + "/" + di.Name;
                     try
                     {
                         foreach (var file in di.GetFiles())
@@ -56,7 +56,7 @@ namespace MCS.FOI.CalenderToPDF
         public void ProcessCalendarFiles(string sourcePath)
         {
             DirectoryInfo dirInput = new DirectoryInfo(sourcePath);
-            string dirOutput = sourcePath + "\\Output\\";
+            string dirOutput = sourcePath + "/Output/";
             SourcePath = sourcePath;
             ProcessDirectories(dirInput, dirOutput); 
 
