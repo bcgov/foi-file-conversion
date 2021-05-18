@@ -4,6 +4,7 @@ using Syncfusion.Pdf;
 using System;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace MCS.FOI.CalenderToPDF
 {
@@ -73,55 +74,71 @@ namespace MCS.FOI.CalenderToPDF
                         {
                             foreach (var attch in e.Attachments)
                             {
-                                var file = attch.Parameters.Get("X-FILENAME");
-                                string fileName = @$"{DestinationPath}/{file}";
-                                CreateOutputFolder();
-                                File.WriteAllBytes(fileName, attch.Data);
+                                if (attch.Data != null)
+                                {
+                                    var file = attch.Parameters.Get("X-FILENAME");
+                                    string fileName = @$"{DestinationPath}/{file}";
+                                    CreateOutputFolder();
+                                    File.WriteAllBytes(fileName, attch.Data);
+                                }
                             }
                         }
                         //Meeting Title
-                        htmlString.AppendFormat(@"<div class='header" + i + "'><h1>" + e.Summary + "</h1><hr><table style='border: 5px; padding: 0;'>");
+                        htmlString.Append(@"<div class='header" + i + "' style='padding:2% 0 2% 0; border-top:5px solid white; border-bottom: 5px solid white;'><h1>" + e.Summary + "</h1><hr><table style='border: 5px; padding: 0; font-size:20px;'>");
 
+                        string organizer = string.Empty;
                         //Organizer Name and Email
-                        htmlString.AppendFormat(@"<tr>
+                        if (e.Organizer != null)
+                        {
+                            organizer = e.Organizer.CommonName + "(" + e.Organizer.Value.AbsoluteUri + ")";
+                            
+                        }
+                        else
+                        {
+                            organizer = @"Unknown Organizer(mailto:unknownorganizer@calendar.google.com)";
+                        }
+                        htmlString.Append(@"<tr>
                         <td><b>From: </b></td>
-                        <td>" + e.Organizer.CommonName + "(" + e.Organizer.Value.AbsoluteUri + ")" + "</td></tr>");
-
+                        <td>" + organizer + "</td></tr>");
                         //Attendees name and Email
                         string attName = "";
                         foreach (var attendee in e.Attendees)
                         {
                             attName += ";" + attendee.CommonName + "(" + attendee.Value.AbsoluteUri + ")";
                         }
-                        attName = attName.Substring(1);
-                        htmlString.AppendFormat(@"<tr>
+                        if(!string.IsNullOrEmpty(attName))
+                            attName = attName.Substring(1);
+                        htmlString.Append(@"<tr>
                         <td><b>To: </b></td>
                         <td>" + attName + "</td></tr>");
 
                         //Meeting created timestamp
-                        htmlString.AppendFormat(@"<tr>
+                        htmlString.Append(@"<tr>
                         <td><b>Sent: </b></td>
                         <td>" + e.DtStamp.Date + "</td></tr>");
 
                         //Priority
-                        htmlString.AppendFormat(@"<tr>
+                        htmlString.Append(@"<tr>
                         <td><b>Priority: </b></td>
                         <td>" + e.Priority + "</td></tr>");
 
                         //Meeting Start Timestamp
-                        htmlString.AppendFormat(@"<tr>
+                        htmlString.Append(@"<tr>
                         <td><b>Start Time: </b></td>
                         <td>" + e.DtStart.Date + "</td></tr>");
 
                         //Meeting End Timestamp
-                        htmlString.AppendFormat(@"<tr>
+                        htmlString.Append(@"<tr>
                         <td><b>End Time: </b></td>
                         <td>" + e.DtEnd.Date + "</td></tr>");
                         //Meeting Message
-                        htmlString.AppendFormat(@"<tr>
+                        string message = @""+e.Description.Replace("<", "&lt;").Replace(">", "&gt;").Replace("\n", "<br>");
+                        message = message.Replace("&lt;br&gt;", "<br>").Replace("&lt;br/&gt;", "<br/>");
+                        message = message.Replace("&lt;a","<a").Replace("&lt;/a&gt;", "</a>");
+                        htmlString.Append(@"<tr>
                         <td><b>Description: </b></td>
                         </tr>
-                        <tr><td></td><td>" + e.Description.Replace("<", "&lt;").Replace(">", "&gt;").Replace("\n", "<br>") + "</td></tr>");
+                        <tr><td></td><td>" + message.Replace("&lt;br&gt;", "<br>").Replace("&lt;br/&gt;", "<br/>") + "</td></tr>");
                         htmlString.Append(@"
                                 </table>
                             </div><hr>");
@@ -170,16 +187,24 @@ namespace MCS.FOI.CalenderToPDF
 
                 //Assign WebKit converter settings to HTML converter
                 htmlConverter.ConverterSettings = webKitConverterSettings;
+                htmlConverter.ConverterSettings.Margin.All = 25;
+                htmlConverter.ConverterSettings.EnableHyperLink = true;
+                htmlConverter.ConverterSettings.PdfPageSize = PdfPageSize.A4;
 
                 //Convert HTML string to PDF
                 PdfDocument document = htmlConverter.Convert(strHTML, SourcePath);
-                document.PageSettings.Size = PdfPageSize.Letter;
-                document.PageSettings.Margins.All = 200;
+                
+                //document.PageSettings.Size = PdfPageSize.A4;
+                //document.PageSettings.Margins.Left = 40;
+                //document.PageSettings.Margins.Right = 40;
+                //document.PageSettings.Margins.Top = 20000;
+                //document.PageSettings.Margins.Bottom = 20000;
+                //document.PageSettings.Margins.All = 50;
 
                 CreateOutputFolder();
                 string outputPath = Path.Combine(DestinationPath, $"{Path.GetFileNameWithoutExtension(FileName)}.pdf");
                 fileStream = new FileStream(outputPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-
+                
                 //Save and close the PDF document 
                 document.Save(fileStream);
                 document.Close(true);
