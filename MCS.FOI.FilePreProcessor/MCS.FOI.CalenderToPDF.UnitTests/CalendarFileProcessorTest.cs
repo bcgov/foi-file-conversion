@@ -7,25 +7,59 @@ namespace MCS.FOI.CalenderToPDF.UnitTests
     public class CalendarFileProcessorTest
     {
         [TestMethod]
-        public void ProcessCalendarFilesTest()
+        public void ProcessSimpleCalendarFilesTest()
         {
-            string basePath = @"../../../SharedLAN/Req1";
-            string destinationPath = basePath + "/Output/folder1/folder1/";
-            string sourcePath = $@"{basePath}/folder1/folder1/FOI-FileConversion Test iCalendar Request.ics";
-            CalendarFileProcessor calendarFileProcessor = new CalendarFileProcessor(basePath, sourcePath, destinationPath);
-            calendarFileProcessor.ProcessCalendarFiles();     
-            bool isFileExists = File.Exists($@"{destinationPath}/FOI-FileConversion Test iCalendar Request.pdf");
-            Assert.IsTrue(isFileExists);
+            string rootFolder = getSourceFolder();
+            CalendarFileProcessor calendarFileProcessor = new CalendarFileProcessor();
+            calendarFileProcessor.SourcePath = string.Concat(rootFolder, @"\folder2\");
+            calendarFileProcessor.DestinationPath = string.Concat(rootFolder, @"\output\", calendarFileProcessor.SourcePath.Replace(rootFolder, "")); 
+            calendarFileProcessor.FileName = "iCalendar.ics";
+                     
+            bool isProcessed = calendarFileProcessor.ProcessCalendarFiles();
+            Assert.IsTrue(isProcessed == true, $"Calendar to PDF Conversion failed for {calendarFileProcessor.FileName}");
+
+            string outputFilePath = Path.Combine(calendarFileProcessor.DestinationPath, $"{Path.GetFileNameWithoutExtension(calendarFileProcessor.FileName)}.pdf");
+            bool isFileExists = File.Exists(outputFilePath);
+            Assert.IsTrue(isFileExists, $"Converted PDF file does not exists {calendarFileProcessor.FileName}");
         }
         [TestMethod]
-        public void ReadFileTest()
+        public void ProcessCalendarFileWithAttachmentsTest()
         {
-            string basePath = @"../../../SharedLAN/Req1";
-            string destinationPath = basePath + "/Output/folder1/folder1/";
-            string sourcePath = $@"{basePath}/folder1/folder1/FOI-FileConversion Test iCalendar Request.ics";
-            CalendarFileProcessor calendarFileProcessor = new CalendarFileProcessor(basePath, sourcePath, destinationPath);
-            string htmlString = calendarFileProcessor.ReadFIle();
-            Assert.IsTrue(!string.IsNullOrEmpty(htmlString));
+            string rootFolder = getSourceFolder();
+            CalendarFileProcessor calendarFileProcessor = new CalendarFileProcessor();
+            calendarFileProcessor.SourcePath = string.Concat(rootFolder, @"\folder3\");
+            calendarFileProcessor.DestinationPath = string.Concat(rootFolder, @"\output\", calendarFileProcessor.SourcePath.Replace(rootFolder, ""));
+            calendarFileProcessor.FileName = "FOI-FileConversion Test iCalendar Request.ics";
+
+            bool isProcessed = calendarFileProcessor.ProcessCalendarFiles();
+            Assert.IsTrue(isProcessed == true, $"Calendar to PDF Conversion failed for {calendarFileProcessor.FileName}");
+
+            string outputFilePath = Path.Combine(calendarFileProcessor.DestinationPath, $"{Path.GetFileNameWithoutExtension(calendarFileProcessor.FileName)}.pdf");
+            bool isFileExists = File.Exists(outputFilePath);
+            Assert.IsTrue(isFileExists, $"Converted PDF file does not exists {calendarFileProcessor.FileName}");
+        }
+        [TestMethod]
+        public void ProcessFolderLevelCalendarFileTest()
+        {
+            string rootFolder = getSourceFolder();
+            CalendarFileProcessor calendarFileProcessor = new CalendarFileProcessor();
+            calendarFileProcessor.SourcePath = string.Concat(rootFolder, @"\folder1\folder1\");
+            calendarFileProcessor.DestinationPath = string.Concat(rootFolder, @"\output\", calendarFileProcessor.SourcePath.Replace(rootFolder, ""));
+            calendarFileProcessor.FileName = "FOI-FileConversion Test iCalendar Request.ics";
+
+            bool isProcessed = calendarFileProcessor.ProcessCalendarFiles();
+            Assert.IsTrue(isProcessed == true, $"Calendar to PDF Conversion failed for {calendarFileProcessor.FileName}");
+
+            string outputFilePath = Path.Combine(calendarFileProcessor.DestinationPath, $"{Path.GetFileNameWithoutExtension(calendarFileProcessor.FileName)}.pdf");
+            bool isFileExists = File.Exists(outputFilePath);
+            Assert.IsTrue(isFileExists, $"Converted PDF file does not exists {calendarFileProcessor.FileName}");
+        }
+        private string getSourceFolder()
+        {
+            string currentDirectory = Directory.GetCurrentDirectory();
+            string approot = currentDirectory.Replace(@"\bin\Debug\netcoreapp3.1", "");
+            return Path.Combine(approot, @"SharedLAN\Req1");
+
         }
     }
 }
