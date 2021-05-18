@@ -6,6 +6,6 @@ namespace MCS.FOI.CalenderToPDF
 {
     public interface ICalendarFileProcessor
     {
-        public void ProcessCalendarFiles(string sourcePath);
+        public void ProcessCalendarFiles(string basePath, string sourcePath, string destinationPath);
     }
 }

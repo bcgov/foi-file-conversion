@@ -1,6 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
-using System.Reflection;
 
 namespace MCS.FOI.CalenderToPDF.UnitTests
 {
@@ -10,9 +9,24 @@ namespace MCS.FOI.CalenderToPDF.UnitTests
         [TestMethod]
         public void ProcessCalendarFilesTest()
         {
-            string sharedpath = @"../../../SharedLAN/Req1";            
-            CalendarFileProcessor calendarFileProcessor = new CalendarFileProcessor();
-            calendarFileProcessor.ProcessCalendarFiles(sharedpath);
+            string basePath = @"../../../SharedLAN/Req1";
+            string destinationPath = basePath + "/Output/folder1/folder1/";
+            string sourcePath = $@"{basePath}/folder1/folder1/FOI-FileConversion Test iCalendar Request.ics";
+            CalendarFileProcessor calendarFileProcessor = new CalendarFileProcessor(basePath, sourcePath, destinationPath);
+            calendarFileProcessor.ProcessCalendarFiles();     
+            bool isFileExists = File.Exists($@"{destinationPath}/FOI-FileConversion Test iCalendar Request.pdf");
+            Assert.IsTrue(isFileExists);
+        }
+        [TestMethod]
+        public void ReadFileTest()
+        {
+            string basePath = @"../../../SharedLAN/Req1";
+            string destinationPath = basePath + "/Output/folder1/folder1/";
+            string sourcePath = $@"{basePath}/folder1/folder1/FOI-FileConversion Test iCalendar Request.ics";
+            CalendarFileProcessor calendarFileProcessor = new CalendarFileProcessor(basePath, sourcePath, destinationPath);
+            string htmlString = calendarFileProcessor.ReadFIle();
+            Assert.IsTrue(!string.IsNullOrEmpty(htmlString));
         }
     }
 }
+

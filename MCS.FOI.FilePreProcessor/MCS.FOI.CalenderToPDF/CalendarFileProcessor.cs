@@ -1,5 +1,4 @@
 ﻿using Ical.Net;
-using Ical.Net.CalendarComponents;
 using Syncfusion.HtmlConverter;
 using Syncfusion.Pdf;
 using System;
@@ -10,80 +9,64 @@ namespace MCS.FOI.CalenderToPDF
 {
     public class CalendarFileProcessor
     {
+        public string BasePath { get; set; }
         public string SourcePath { get; set; }
-        private void ProcessDirectories(DirectoryInfo dirInput, string dirOutput)
+        public string DestinationPath { get; set; }
+        public string FileName { get; set; }
+
+        public CalendarFileProcessor(string basePath, string sourcePath, string destinationPath)
         {
-            string dirOutputfix = String.Empty;
-            bool isCalendar = false;
-            foreach (DirectoryInfo di in dirInput.GetDirectories())
+            BasePath = basePath;
+            SourcePath = sourcePath;
+            DestinationPath = destinationPath;
+        }       
+
+        public void ProcessCalendarFiles()
+        {
+            //BasePath = basePath;
+            DirectoryInfo dirInput = new DirectoryInfo(BasePath);
+            //DestinationPath = destinationPath;
+            //SourcePath = sourcePath;
+            try
             {
-                if (di.Name != "Output")
-                {
-                    dirOutputfix = dirOutput + "/" + di.Name;
-                    try
-                    {
-                        foreach (var file in di.GetFiles())
-                        {
-                            if (file.Extension == ".ics")
-                            {
-                                isCalendar = true;
-                                if (!Directory.Exists(dirOutputfix))
-                                    Directory.CreateDirectory(dirOutputfix);
-                                string htmlString = ReadFIle(file.FullName, dirOutputfix);
-                                string fileName = Path.GetFileNameWithoutExtension(file.FullName);
-                                Converter(htmlString, fileName, dirOutputfix);
-                            }
-                        }
-                        if (isCalendar)
-                        {
-                            if (!Directory.Exists(dirOutputfix))
-                                Directory.CreateDirectory(dirOutputfix);
-                            isCalendar = false;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        throw (e);
-                    }
-                }
-
-                ProcessDirectories(di, dirOutputfix);
-
+                //ProcessDirectories(dirInput, DestinationPath);
+                FileName = Path.GetFileNameWithoutExtension(SourcePath);
+                string htmlString = ReadFIle();
+                PDFConverter(htmlString);
 
             }
-        }
-
-        public void ProcessCalendarFiles(string sourcePath)
-        {
-            DirectoryInfo dirInput = new DirectoryInfo(sourcePath);
-            string dirOutput = sourcePath + "/Output/";
-            SourcePath = sourcePath;
-            ProcessDirectories(dirInput, dirOutput); 
+            catch (Exception ex)
+            {
+                throw (ex);
+            }
 
         }
-        private string ReadFIle(string sourcePath, string destinationPath)
+        public string ReadFIle()
         {
-            //var sharedpath = @"/app/input";
-            var sharedpath = sourcePath; // @"\\DESKTOP-9L1FGS3\SharedLAN\Req1";
-                                         // FileStream fs = new FileStream(@$"{sharedpath}/iCalendar.ics", FileMode.Open, FileAccess.Read);
-            FileStream fs = new FileStream(sharedpath, FileMode.Open, FileAccess.Read);
-            StreamReader sr = new StreamReader(fs);
-            string ical = sr.ReadToEnd();
-
-            var calendar = Calendar.Load(ical);
-            var calendarEvent = Calendar.Load<CalendarEvent>(ical);
-            iCalendar cal = new iCalendar();
-            var events = calendar.Events;
-            var sb = new StringBuilder();
-            sb.Append(@"
+            FileStream fs = null;
+            try
+            {
+                //var sharedpath = @"/app/input";
+                //var sharedpath = sourcePath; // @"\\DESKTOP-9L1FGS3\SharedLAN\Req1";
+                // FileStream fs = new FileStream(@$"{sharedpath}/iCalendar.ics", FileMode.Open, FileAccess.Read);
+                string ical = string.Empty;
+                fs = new FileStream(SourcePath, FileMode.Open, FileAccess.Read);
+                using (StreamReader sr = new StreamReader(fs))
+                {
+                    ical = sr.ReadToEnd();
+                }
+                Calendar calendar = Calendar.Load(ical);
+                iCalendar cal = new iCalendar();
+                var events = calendar.Events;
+                StringBuilder sb = new StringBuilder();
+                sb.Append(@"
                         <html>
                             <head>
                             </head>
                             <body style='border: 50px solid white;'>
                                 
                                 ");
-            try
-            {
+
                 int i = 1;
                 foreach (var e in events)
                 {
@@ -92,7 +75,7 @@ namespace MCS.FOI.CalenderToPDF
                         foreach (var attch in e.Attachments)
                         {
                             var file = attch.Parameters.Get("X-FILENAME");
-                            string fileName = @$"{destinationPath}/{file}";
+                            string fileName = @$"{DestinationPath}/{file}";
                             File.WriteAllBytes(fileName, attch.Data);
                         }
                     }
@@ -143,6 +126,7 @@ namespace MCS.FOI.CalenderToPDF
                 sb.Append(@"
                             </body>
                         </html>");
+                string htmlString = sb.ToString();
 
                 return sb.ToString();
             }
@@ -150,12 +134,17 @@ namespace MCS.FOI.CalenderToPDF
             {
                 return ex.Message;
             }
+            finally
+            {
+                if (fs != null)
+                    fs.Dispose();
+            }
         }
 
-        private void Converter(string strHTML, string fileName, string filePath)
+        private void PDFConverter(string strHTML)
         {
             string baseUrl = SourcePath; //@"/app/SharedLAN/Req1"; //@"\\DESKTOP-9L1FGS3\SharedLAN\Req1";
-        
+
             //Initialize HTML to PDF converter with Blink rendering engine
             HtmlToPdfConverter htmlConverter = new HtmlToPdfConverter(HtmlRenderingEngine.WebKit);
 
@@ -171,14 +160,56 @@ namespace MCS.FOI.CalenderToPDF
             PdfDocument document = htmlConverter.Convert(strHTML, baseUrl);
             document.PageSettings.Size = PdfPageSize.Letter;
             document.PageSettings.Margins.All = 200;
-            
-            string outputPath = @$"{filePath}/{fileName}.pdf";
+
+            string outputPath = @$"{DestinationPath}/{FileName}.pdf";
             FileStream fileStream = new FileStream(outputPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
             //Save and close the PDF document 
             document.Save(fileStream);
             document.Close(true);
-            
+
         }
+
+        ////private void ProcessDirectories(DirectoryInfo dirInput, string dirOutput)
+        ////{
+        ////    string dirOutputfix = String.Empty;
+        ////    bool isCalendar = false;
+        ////    foreach (DirectoryInfo di in dirInput.GetDirectories())
+        ////    {
+        ////        if (di.Name != "Output")
+        ////        {
+        ////            dirOutputfix = dirOutput + "/" + di.Name;
+        ////            try
+        ////            {
+        ////                foreach (var file in di.GetFiles())
+        ////                {
+        ////                    if (file.Extension == ".ics")
+        ////                    {
+        ////                        isCalendar = true;
+        ////                        if (!Directory.Exists(dirOutputfix))
+        ////                            Directory.CreateDirectory(dirOutputfix);
+        ////                        //string htmlString = ReadFIle(file.FullName, dirOutputfix);
+        ////                        string fileName = Path.GetFileNameWithoutExtension(file.FullName);
+        ////                        //Converter(htmlString, fileName, dirOutputfix);
+        ////                    }
+        ////                }
+        ////                if (isCalendar)
+        ////                {
+        ////                    if (!Directory.Exists(dirOutputfix))
+        ////                        Directory.CreateDirectory(dirOutputfix);
+        ////                    isCalendar = false;
+        ////                }
+        ////            }
+        ////            catch (Exception e)
+        ////            {
+        ////                throw (e);
+        ////            }
+        ////        }
+
+        ////        ProcessDirectories(di, dirOutputfix);
+
+
+        ////    }
+        ////}
     }
 }
