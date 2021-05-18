@@ -2,7 +2,7 @@
 
 FROM mcr.microsoft.com/dotnet/runtime:3.1 AS base
 WORKDIR /app
-
+ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
 WORKDIR /src
 COPY ["MCS.FOI.FileConversion/MCS.FOI.FileConversion.csproj", "MCS.FOI.FileConversion/"]
