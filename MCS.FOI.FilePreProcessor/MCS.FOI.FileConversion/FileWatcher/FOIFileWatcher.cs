@@ -11,6 +11,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
 {
     public class FOIFileWatcher
     {
+        Dictionary<string, (DateTime, string, string, DateTime?)> watchStatuses;
 
         FileSystemWatcher watcher;
         private string PathToWatch { get; set; }
@@ -21,6 +22,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
         {
             this.PathToWatch = pathtowatch;
             this.FileTypes = fileTypes;
+            watchStatuses = new Dictionary<string, (DateTime, string, string, DateTime?)>();
         }
 
         public void StartWatching()
@@ -61,6 +63,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
 
         private void OnCreated(object sender, FileSystemEventArgs e)
         {
+
             string extension = string.Empty;
             string sourcePath = string.Empty;
             string fileName = string.Empty;
@@ -74,17 +77,28 @@ namespace MCS.FOI.FileConversion.FileWatcher
                 extension = fileInfo.Extension;
                 fileName = fileInfo.Name;
                 sourcePath = e.FullPath.Replace(fileInfo.Name, "");
+                watchStatuses.Add(e.FullPath, (fileInfo.CreationTimeUtc, "Created", "", null));
             }
             Task.Run(() =>
             {
+
                 switch (extension)
                 {
                     case FileExtensions.xls:
                     case FileExtensions.xlsx:
-                        ProcessExcelFiles(fileName, sourcePath);
+
+                        watchStatuses[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "InProgress", "", null);
+
+                        bool status = ProcessExcelFiles(fileInfo);
+
+                        if (status)
+                            watchStatuses[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "Completed", "", DateTime.Now);
+
                         break;
                     case FileExtensions.ics:
-                        ProcessCalendarFiles(fileName, sourcePath);
+
+                        ProcessCalendarFiles(fileInfo);
+
                         break;
                     default:
                         break;
@@ -94,18 +108,25 @@ namespace MCS.FOI.FileConversion.FileWatcher
 
         }
 
-        private void ProcessExcelFiles(string fileName, string sourcePath)
+        private bool ProcessExcelFiles(FileInfo fileInfo)
         {
+
+            var sourcePath = fileInfo.FullName.Replace(fileInfo.Name, "");
+            var fileName = fileInfo.Name;
             ExcelFileProcessor excelFileProcessor = new ExcelFileProcessor();
             excelFileProcessor.ExcelFileName = fileName;
             excelFileProcessor.IsSinglePDFOutput = false;
             excelFileProcessor.ExcelSourceFilePath = sourcePath;
             excelFileProcessor.PdfOutputFilePath = getPdfOutputPath(excelFileProcessor.ExcelSourceFilePath);
-            excelFileProcessor.ConvertToPDF();
+
+            return excelFileProcessor.ConvertToPDF();
         }
 
-        private void ProcessCalendarFiles(string fileName, string sourcePath)
+        private void ProcessCalendarFiles(FileInfo fileInfo)
         {
+            var sourcePath = fileInfo.FullName.Replace(fileInfo.Name, "");
+            var fileName = fileInfo.Name;
+
             CalendarFileProcessor calendarFileProcessor = new CalendarFileProcessor();
             calendarFileProcessor.FileName = fileName;
             calendarFileProcessor.SourcePath = sourcePath;
