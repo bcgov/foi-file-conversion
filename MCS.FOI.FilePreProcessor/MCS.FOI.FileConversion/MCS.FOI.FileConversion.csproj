@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.13" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MCS.FOI.ExcelToPDF\MCS.FOI.ExcelToPDF.csproj" />
+  </ItemGroup>
 </Project>
