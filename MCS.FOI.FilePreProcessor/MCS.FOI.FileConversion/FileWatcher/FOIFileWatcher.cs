@@ -1,4 +1,5 @@
-﻿using MCS.FOI.ExcelToPDF;
+﻿using MCS.FOI.CalenderToPDF;
+using MCS.FOI.ExcelToPDF;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -60,23 +61,56 @@ namespace MCS.FOI.FileConversion.FileWatcher
 
         private void OnCreated(object sender, FileSystemEventArgs e)
         {
+            string extension = string.Empty;
+            string sourcePath = string.Empty;
+            string fileName = string.Empty;
             string value = $"Created: {e.FullPath}";
             Console.WriteLine(value);
             Console.WriteLine($"Path to watch is {this.PathToWatch}");
-            
-            FileInfo fileInfo = new FileInfo(e.FullPath);
 
+            FileInfo fileInfo = new FileInfo(e.FullPath);
+            if (fileInfo != null)
+            {
+                extension = fileInfo.Extension;
+                fileName = fileInfo.Name;
+                sourcePath = e.FullPath.Replace(fileInfo.Name, "");
+            }
             Task.Run(() =>
             {
-                ExcelFileProcessor excelFileProcessor = new ExcelFileProcessor();
-                excelFileProcessor.ExcelFileName = fileInfo.Name;
-                excelFileProcessor.IsSinglePDFOutput = false;
-                excelFileProcessor.ExcelSourceFilePath = e.FullPath.Replace(fileInfo.Name, "");
-                excelFileProcessor.PdfOutputFilePath = getPdfOutputPath(excelFileProcessor.ExcelSourceFilePath);
-                excelFileProcessor.ConvertToPDF();
+                switch (extension)
+                {
+                    case FileExtensions.xls:
+                    case FileExtensions.xlsx:
+                        ProcessExcelFiles(fileName, sourcePath);
+                        break;
+                    case FileExtensions.ics:
+                        ProcessCalendarFiles(fileName, sourcePath);
+                        break;
+                    default:
+                        break;
+                }
 
             });
 
+        }
+
+        private void ProcessExcelFiles(string fileName, string sourcePath)
+        {
+            ExcelFileProcessor excelFileProcessor = new ExcelFileProcessor();
+            excelFileProcessor.ExcelFileName = fileName;
+            excelFileProcessor.IsSinglePDFOutput = false;
+            excelFileProcessor.ExcelSourceFilePath = sourcePath;
+            excelFileProcessor.PdfOutputFilePath = getPdfOutputPath(excelFileProcessor.ExcelSourceFilePath);
+            excelFileProcessor.ConvertToPDF();
+        }
+
+        private void ProcessCalendarFiles(string fileName, string sourcePath)
+        {
+            CalendarFileProcessor calendarFileProcessor = new CalendarFileProcessor();
+            calendarFileProcessor.FileName = fileName;
+            calendarFileProcessor.SourcePath = sourcePath;
+            calendarFileProcessor.DestinationPath = getPdfOutputPath(calendarFileProcessor.SourcePath);
+            calendarFileProcessor.ProcessCalendarFiles();
         }
 
         private void OnDeleted(object sender, FileSystemEventArgs e) =>
@@ -107,14 +141,14 @@ namespace MCS.FOI.FileConversion.FileWatcher
 
         private string getPdfOutputPath(string excelsourcePath)
         {
-            if(!excelsourcePath.ToLower().Contains(@"\output\"))
+            if (!excelsourcePath.ToLower().Contains(@"\output\"))
             {
                 return string.Concat(this.PathToWatch, @"\output\", excelsourcePath.Replace(this.PathToWatch, ""));
             }
             else
             {
                 return string.Concat(excelsourcePath, @"\calenderattachments\");
-            }           
+            }
         }
     }
 }

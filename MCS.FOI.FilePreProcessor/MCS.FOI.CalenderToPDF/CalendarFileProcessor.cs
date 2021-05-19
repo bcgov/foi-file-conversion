@@ -77,7 +77,7 @@ namespace MCS.FOI.CalenderToPDF
                                 if (attch.Data != null)
                                 {
                                     var file = attch.Parameters.Get("X-FILENAME");
-                                    string fileName = @$"{DestinationPath}/{file}";
+                                    string fileName = @$"{DestinationPath}\{Path.GetFileNameWithoutExtension(FileName)}_{file}";
                                     CreateOutputFolder();
                                     File.WriteAllBytes(fileName, attch.Data);
                                 }
@@ -182,7 +182,8 @@ namespace MCS.FOI.CalenderToPDF
                 WebKitConverterSettings webKitConverterSettings = new WebKitConverterSettings() { EnableHyperLink = true };
 
                 //TODO: The path needs to be replaced with @"/QtBinariesLinux"; when containerizing the code
-                string path = @"" + Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName + "\\QtBinariesWindows";  
+                //string path = @"" + Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName + "\\QtBinariesWindows";
+                string path = @"" + Environment.CurrentDirectory + "\\QtBinariesWindows";
                 webKitConverterSettings.WebKitPath = path; // $@"/QtBinariesLinux";
 
                 //Assign WebKit converter settings to HTML converter
@@ -193,13 +194,6 @@ namespace MCS.FOI.CalenderToPDF
 
                 //Convert HTML string to PDF
                 PdfDocument document = htmlConverter.Convert(strHTML, SourcePath);
-                
-                //document.PageSettings.Size = PdfPageSize.A4;
-                //document.PageSettings.Margins.Left = 40;
-                //document.PageSettings.Margins.Right = 40;
-                //document.PageSettings.Margins.Top = 20000;
-                //document.PageSettings.Margins.Bottom = 20000;
-                //document.PageSettings.Margins.All = 50;
 
                 CreateOutputFolder();
                 string outputPath = Path.Combine(DestinationPath, $"{Path.GetFileNameWithoutExtension(FileName)}.pdf");
