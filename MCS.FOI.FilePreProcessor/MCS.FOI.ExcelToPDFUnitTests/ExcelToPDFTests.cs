@@ -28,6 +28,7 @@ namespace MCS.FOI.ExcelToPDFUnitTests
             bool fileexists = File.Exists(outputfile);
             Assert.IsTrue(fileexists == true, $"Converted PDF file does not exists {excelFileProcessor.ExcelFileName}");
 
+
         }
 
         [TestMethod]
@@ -46,6 +47,20 @@ namespace MCS.FOI.ExcelToPDFUnitTests
             string outputfile = Path.Combine(getExcelRootFolder(), "output", $"{Path.GetFileNameWithoutExtension(excelFileProcessor.ExcelFileName)}.pdf");
             bool fileexists = File.Exists(outputfile);
             Assert.IsTrue(fileexists == true, $"Converted PDF file does not exists {excelFileProcessor.ExcelFileName}");
+
+
+            ExcelFileProcessor excelFileProcessor1 = new ExcelFileProcessor();
+            excelFileProcessor1.ExcelFileName = "IRIS Export - Masked.xlsx";
+            excelFileProcessor1.ExcelSourceFilePath = getExcelRootFolder();
+            excelFileProcessor1.IsSinglePDFOutput = true;
+            excelFileProcessor1.PdfOutputFilePath = Path.Combine(getExcelRootFolder(), "output");
+            bool isconverted1 = excelFileProcessor1.ConvertToPDF();
+
+            Assert.IsTrue(isconverted1 == true, $"Excel to PDF Conversion failed for {excelFileProcessor1.ExcelFileName}");
+
+            string outputfile1 = Path.Combine(getExcelRootFolder(), "output", $"{Path.GetFileNameWithoutExtension(excelFileProcessor1.ExcelFileName)}.pdf");
+            bool fileexists1 = File.Exists(outputfile1);
+            Assert.IsTrue(fileexists1 == true, $"Converted PDF file does not exists {excelFileProcessor1.ExcelFileName}");
 
         }
 

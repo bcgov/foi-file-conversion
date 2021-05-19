@@ -3,6 +3,7 @@ using Syncfusion.XlsIO;
 using Syncfusion.XlsIORenderer;
 using System;
 using System.IO;
+using System.Threading;
 
 namespace MCS.FOI.ExcelToPDF
 {
@@ -29,6 +30,7 @@ namespace MCS.FOI.ExcelToPDF
 
         public bool IsSinglePDFOutput { get; set; }
 
+        private static object lockObject = new object();
         public bool ConvertToPDF()
         {
             bool converted = false;
@@ -40,10 +42,12 @@ namespace MCS.FOI.ExcelToPDF
                     using (ExcelEngine excelEngine = new ExcelEngine())
                     {
                         IApplication application = excelEngine.Excel;
+
+                        Thread.Sleep(1000);
                         using (FileStream excelStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read))
                         {
-
                             IWorkbook workbook = application.Workbooks.Open(excelStream, ExcelParseOptions.DoNotParsePivotTable);
+                           
                             if (workbook.Worksheets.Count > 0)
                             {
                                 if (!IsSinglePDFOutput)
@@ -61,9 +65,9 @@ namespace MCS.FOI.ExcelToPDF
                                 }
                             }
 
-                            
                             converted = true;
                         }
+
                     }
                 }
                 else
@@ -92,7 +96,7 @@ namespace MCS.FOI.ExcelToPDF
             pdfDocument.Compression = PdfCompressionLevel.Normal;
             pdfDocument.Save(stream);
             stream.Dispose();
-           
+
 
         }
 

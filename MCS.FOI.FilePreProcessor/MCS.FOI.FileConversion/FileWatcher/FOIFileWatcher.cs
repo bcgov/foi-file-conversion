@@ -3,13 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MCS.FOI.FileConversion.FileWatcher
 {
-    public class FOIFileWatcher 
+    public class FOIFileWatcher
     {
-        private bool disposedValue;
+
         FileSystemWatcher watcher;
         private string PathToWatch { get; set; }
 
@@ -24,7 +25,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
         public void StartWatching()
         {
 
-            foreach(string fileType in FileTypes)
+            foreach (string fileType in FileTypes)
             {
                 watcher = new FileSystemWatcher(this.PathToWatch);
                 watcher.NotifyFilter = NotifyFilters.Attributes
@@ -45,7 +46,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
                 watcher.IncludeSubdirectories = true;
                 watcher.EnableRaisingEvents = true;
             }
-            
+
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
@@ -62,7 +63,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
             string value = $"Created: {e.FullPath}";
             Console.WriteLine(value);
             Console.WriteLine($"Path to watch is {this.PathToWatch}");
-
+            
             FileInfo fileInfo = new FileInfo(e.FullPath);
 
             Task.Run(() =>
@@ -71,12 +72,11 @@ namespace MCS.FOI.FileConversion.FileWatcher
                 excelFileProcessor.ExcelFileName = fileInfo.Name;
                 excelFileProcessor.IsSinglePDFOutput = false;
                 excelFileProcessor.ExcelSourceFilePath = e.FullPath.Replace(fileInfo.Name, "");
-                excelFileProcessor.PdfOutputFilePath = string.Concat(this.PathToWatch, @"\output\", excelFileProcessor.ExcelSourceFilePath.Replace(this.PathToWatch, ""));
+                excelFileProcessor.PdfOutputFilePath = getPdfOutputPath(excelFileProcessor.ExcelSourceFilePath);
                 excelFileProcessor.ConvertToPDF();
 
             });
 
-            
         }
 
         private void OnDeleted(object sender, FileSystemEventArgs e) =>
@@ -105,6 +105,16 @@ namespace MCS.FOI.FileConversion.FileWatcher
             }
         }
 
-       
+        private string getPdfOutputPath(string excelsourcePath)
+        {
+            if(!excelsourcePath.ToLower().Contains(@"\output\"))
+            {
+                return string.Concat(this.PathToWatch, @"\output\", excelsourcePath.Replace(this.PathToWatch, ""));
+            }
+            else
+            {
+                return string.Concat(excelsourcePath, @"\calenderattachments\");
+            }           
+        }
     }
 }
