@@ -1,0 +1,161 @@
+BEGIN:VCALENDAR
+PRODID:-//Microsoft Corporation//Outlook 16.0 MIMEDIR//EN
+VERSION:2.0
+METHOD:REQUEST
+X-MS-OLK-FORCEINSPECTOROPEN:TRUE
+BEGIN:VTIMEZONE
+TZID:Pacific Standard Time
+BEGIN:STANDARD
+DTSTART:16011104T020000
+RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=11
+TZOFFSETFROM:-0700
+TZOFFSETTO:-0800
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:16010311T020000
+RRULE:FREQ=YEARLY;BYDAY=2SU;BYMONTH=3
+TZOFFSETFROM:-0800
+TZOFFSETTO:-0700
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+ATTENDEE;CN="Hoskins, Chad CITZ:EX";RSVP=TRUE:mailto:Chad.Hoskins@gov.bc.ca
+ATTENDEE;CN="Mullane, Loren CITZ:EX";RSVP=TRUE:mailto:Loren.Mullane@gov.bc.
+	ca
+ATTENDEE;CN="Prodan, Matthew CITZ:EX";RSVP=TRUE:mailto:Matthew.Prodan@gov.b
+	c.ca
+ATTENDEE;CN="Andrews, Arielle CITZ:EX";RSVP=TRUE:mailto:Arielle.Andrews@gov
+	.bc.ca
+ATTENDEE;CN=divya.v@aot-technologies.com;RSVP=TRUE:mailto:divya.v@aot-techn
+	ologies.com
+ATTENDEE;CN=jacklyn.harrietha@aot-technologies.com;RSVP=TRUE:mailto:jacklyn
+	.harrietha@aot-technologies.com
+ATTENDEE;CN=sumathi.thirumani@aot-technologies.com;RSVP=TRUE:mailto:sumathi
+	.thirumani@aot-technologies.com
+ATTENDEE;CN=adam.coard@aot-technologies.com;RSVP=TRUE:mailto:adam.coard@aot
+	-technologies.com
+ATTENDEE;CN=abin.antony@aot-technologies.com;RSVP=TRUE:mailto:abin.antony@a
+	ot-technologies.com
+ATTENDEE;CN="Mathavan, Nanthini CITZ:EX";RSVP=TRUE:mailto:Nanthini.Mathavan
+	@gov.bc.ca
+ATTENDEE;CN="Kewley, Mark CITZ:EX";ROLE=OPT-PARTICIPANT;RSVP=TRUE:mailto:Ma
+	rk.Kewley@gov.bc.ca
+ATTENDEE;CN="Kukucska, Cindy L CITZ:EX";ROLE=OPT-PARTICIPANT;RSVP=TRUE:mail
+	to:Cindy.Kukucska@gov.bc.ca
+ATTENDEE;CN="Ghag, Kris CITZ:EX";ROLE=OPT-PARTICIPANT;RSVP=TRUE:mailto:Kris
+	.Ghag@gov.bc.ca
+ATTENDEE;CN="Oaten, Jeremy AEST:EX";ROLE=OPT-PARTICIPANT;RSVP=TRUE:mailto:J
+	eremy.Oaten@gov.bc.ca
+CLASS:PUBLIC
+CREATED:20210429T153505Z
+DESCRIPTION:\n_____________________________________________________________
+	___________________\nMicrosoft Teams meeting\nJoin on your computer or mob
+	ile app\nClick here to join the meeting<https://teams.microsoft.com/l/meet
+	up-join/19%3ameeting_ZjFlZjc1ZDktMWZhMy00OGY0LTk5YzgtNGJlZDU0NGNiZDRj%40th
+	read.v2/0?context=%7b%22Tid%22%3a%226fdb5200-3d0d-4a8a-b036-d3685e359adc%2
+	2%2c%22Oid%22%3a%22adaba6c5-1521-4b0d-8e1e-11a9bfe1c924%22%7d>\nOr call in
+	 (audio only)\n+1 778-401-6289\,\,380785847#<tel:+17784016289\,\,380785847
+	#>   Canada\, Victoria\nPhone Conference ID: 380 785 847#\nFind a local nu
+	mber<https://dialin.teams.microsoft.com/1d2ee6b0-0212-4b1a-bc91-f2c7e4ecc3
+	be?id=380785847> | Reset PIN<https://mysettings.lync.com/pstnconferencing>
+	\nLearn More<https://aka.ms/JoinTeamsMeeting> | Meeting options<https://te
+	ams.microsoft.com/meetingOptions/?organizerId=adaba6c5-1521-4b0d-8e1e-11a9
+	bfe1c924&tenantId=6fdb5200-3d0d-4a8a-b036-d3685e359adc&threadId=19_meeting
+	_ZjFlZjc1ZDktMWZhMy00OGY0LTk5YzgtNGJlZDU0NGNiZDRj@thread.v2&messageId=0&la
+	nguage=en-US>\n___________________________________________________________
+	_____________________\n\n
+DTEND;TZID="Pacific Standard Time":20210428T150000
+DTSTAMP:20210427T233803Z
+DTSTART;TZID="Pacific Standard Time":20210428T090000
+LAST-MODIFIED:20210429T153505Z
+LOCATION:Microsoft Teams Meeting
+ORGANIZER;CN="Pilchar, Molly CITZ:EX":mailto:Molly.Pilchar@gov.bc.ca
+PRIORITY:5
+SEQUENCE:2
+SUMMARY;LANGUAGE=en-ca:FOI Modernization Inception\, pt 3: Release planning
+TRANSP:OPAQUE
+UID:040000008200E00074C5B7101A82E00800000000505B43B2E432D701000000000000000
+	0100000009929ADD40008694C907F3E08F5A379CF
+X-ALT-DESC;FMTTYPE=text/html:<html xmlns:v="urn:schemas-microsoft-com:vml" 
+	xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-mic
+	rosoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/
+	12/omml" xmlns="http://www.w3.org/TR/REC-html40"><head>\n<meta http-equiv=
+	"Content-Type" content="text/html\; charset=us-ascii"><meta name="Generato
+	r" content="Microsoft Word 15 (filtered medium)"><style><!--\n/* Font Defi
+	nitions */\n@font-face\n	{font-family:"Cambria Math"\;\n	panose-1:2 4 5 3 
+	5 4 6 3 2 4\;}\n@font-face\n	{font-family:Calibri\;\n	panose-1:2 15 5 2 2 
+	2 4 3 2 4\;}\n@font-face\n	{font-family:"Segoe UI"\;\n	panose-1:2 11 5 2 4
+	 2 4 2 2 3\;}\n@font-face\n	{font-family:"Segoe UI Semibold"\;\n	panose-1:
+	2 11 7 2 4 2 4 2 2 3\;}\n/* Style Definitions */\np.MsoNormal\, li.MsoNorm
+	al\, div.MsoNormal\n	{margin:0cm\;\n	font-size:11.0pt\;\n	font-family:"Cal
+	ibri"\,sans-serif\;}\na:link\, span.MsoHyperlink\n	{mso-style-priority:99\
+	;\n	color:#0563C1\;\n	text-decoration:underline\;}\nspan.EmailStyle18\n	{m
+	so-style-type:personal-compose\;\n	font-family:"Calibri"\,sans-serif\;\n	c
+	olor:windowtext\;}\n.MsoChpDefault\n	{mso-style-type:export-only\;\n	font-
+	size:10.0pt\;}\n@page WordSection1\n	{size:612.0pt 792.0pt\;\n	margin:72.0
+	pt 72.0pt 72.0pt 72.0pt\;}\ndiv.WordSection1\n	{page:WordSection1\;}\n--><
+	/style><!--[if gte mso 9]><xml>\n<o:shapedefaults v:ext="edit" spidmax="10
+	26" />\n</xml><![endif]--><!--[if gte mso 9]><xml>\n<o:shapelayout v:ext="
+	edit">\n<o:idmap v:ext="edit" data="1" />\n</o:shapelayout></xml><![endif]
+	--></head><body lang="EN-US" link="#0563C1" vlink="#954F72" style="word-wr
+	ap:break-word"><div class="WordSection1"><p class="MsoNormal"><o:p>&nbsp\;
+	</o:p></p><div><p class="MsoNormal"><span style="color:#5F5F5F">__________
+	______________________________________________________________________</sp
+	an> <o:p></o:p></p></div><div><div style="margin-top:18.0pt\;margin-bottom
+	:15.0pt"><p class="MsoNormal"><span style="font-size:18.0pt\;font-family:&
+	quot\;Segoe UI&quot\;\,sans-serif\;color:#252424">Microsoft Teams meeting<
+	/span><span style="font-family:&quot\;Segoe UI&quot\;\,sans-serif\;color:#
+	252424"> <o:p></o:p></span></p></div><div style="margin-bottom:15.0pt"><di
+	v><p class="MsoNormal"><b><span style="font-size:10.5pt\;font-family:&quot
+	\;Segoe UI&quot\;\,sans-serif\;color:#252424">Join on your computer or mob
+	ile app</span></b><b><span style="font-family:&quot\;Segoe UI&quot\;\,sans
+	-serif\;color:#252424"> <o:p></o:p></span></b></p></div><p class="MsoNorma
+	l"><span style="font-family:&quot\;Segoe UI&quot\;\,sans-serif\;color:#252
+	424"><a href="https://teams.microsoft.com/l/meetup-join/19%3ameeting_ZjFlZ
+	jc1ZDktMWZhMy00OGY0LTk5YzgtNGJlZDU0NGNiZDRj%40thread.v2/0?context=%7b%22Ti
+	d%22%3a%226fdb5200-3d0d-4a8a-b036-d3685e359adc%22%2c%22Oid%22%3a%22adaba6c
+	5-1521-4b0d-8e1e-11a9bfe1c924%22%7d" target="_blank"><span style="font-siz
+	e:10.5pt\;font-family:&quot\;Segoe UI Semibold&quot\;\,sans-serif\;color:#
+	6264A7">Click here to join the meeting</span></a> <o:p></o:p></span></p></
+	div><div style="margin-bottom:3.0pt"><div style="margin-bottom:3.0pt"><p c
+	lass="MsoNormal"><b><span style="font-size:10.5pt\;font-family:&quot\;Sego
+	e UI&quot\;\,sans-serif\;color:#252424">Or call in (audio only)</span></b>
+	<span style="font-family:&quot\;Segoe UI&quot\;\,sans-serif\;color:#252424
+	"> <o:p></o:p></span></p></div><div style="margin-bottom:3.0pt"><p class="
+	MsoNormal"><span style="font-family:&quot\;Segoe UI&quot\;\,sans-serif\;co
+	lor:#252424"><a href="tel:&#43\;17784016289\,\,380785847# "><span style="f
+	ont-size:10.5pt\;color:#6264A7">&#43\;1 778-401-6289\,\,380785847#</span><
+	/a> </span><span style="font-size:10.5pt\;font-family:&quot\;Segoe UI&quot
+	\;\,sans-serif\;color:#252424">&nbsp\; Canada\, Victoria </span><span styl
+	e="font-family:&quot\;Segoe UI&quot\;\,sans-serif\;color:#252424"><o:p></o
+	:p></span></p></div></div><p class="MsoNormal"><span style="font-size:10.5
+	pt\;font-family:&quot\;Segoe UI&quot\;\,sans-serif\;color:#252424">Phone C
+	onference ID: </span><span style="font-size:12.0pt\;font-family:&quot\;Seg
+	oe UI&quot\;\,sans-serif\;color:#252424">380 785 847# </span><span style="
+	font-family:&quot\;Segoe UI&quot\;\,sans-serif\;color:#252424"><o:p></o:p>
+	</span></p><div style="margin-bottom:15.0pt"><p class="MsoNormal"><span st
+	yle="font-family:&quot\;Segoe UI&quot\;\,sans-serif\;color:#252424"><a hre
+	f="https://dialin.teams.microsoft.com/1d2ee6b0-0212-4b1a-bc91-f2c7e4ecc3be
+	?id=380785847" target="_blank"><span style="font-size:10.5pt\;color:#6264A
+	7">Find a local number</span></a> | <a href="https://mysettings.lync.com/p
+	stnconferencing" target="_blank"><span style="font-size:10.5pt\;color:#626
+	4A7">Reset PIN</span></a> <o:p></o:p></span></p></div><div style="margin-t
+	op:15.0pt\;margin-bottom:18.0pt"><p class="MsoNormal"><span style="font-fa
+	mily:&quot\;Segoe UI&quot\;\,sans-serif\;color:#252424"><a href="https://a
+	ka.ms/JoinTeamsMeeting" target="_blank"><span style="font-size:10.5pt\;col
+	or:#6264A7">Learn More</span></a> | <a href="https://teams.microsoft.com/m
+	eetingOptions/?organizerId=adaba6c5-1521-4b0d-8e1e-11a9bfe1c924&amp\;tenan
+	tId=6fdb5200-3d0d-4a8a-b036-d3685e359adc&amp\;threadId=19_meeting_ZjFlZjc1
+	ZDktMWZhMy00OGY0LTk5YzgtNGJlZDU0NGNiZDRj@thread.v2&amp\;messageId=0&amp\;l
+	anguage=en-US" target="_blank"><span style="font-size:10.5pt\;color:#6264A
+	7">Meeting options</span></a> <o:p></o:p></span></p></div></div><div><p cl
+	ass="MsoNormal"><span style="color:#5F5F5F">______________________________
+	__________________________________________________</span> <o:p></o:p></p><
+	/div><p class="MsoNormal"><o:p>&nbsp\;</o:p></p></div></body></html>
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MICROSOFT-CDO-IMPORTANCE:1
+X-MICROSOFT-CDO-INTENDEDSTATUS:BUSY
+X-MICROSOFT-DISALLOW-COUNTER:FALSE
+X-MS-OLK-APPTSEQTIME:20210417T002226Z
+END:VEVENT
+END:VCALENDAR
