@@ -43,29 +43,45 @@ namespace MCS.FOI.ExcelToPDF
                     {
                         IApplication application = excelEngine.Excel;
 
-                        Thread.Sleep(1000);
-                        using (FileStream excelStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read))
-                        {
-                            IWorkbook workbook = application.Workbooks.Open(excelStream, ExcelParseOptions.DoNotParsePivotTable);
-                           
-                            if (workbook.Worksheets.Count > 0)
-                            {
-                                if (!IsSinglePDFOutput)
-                                {
-                                    foreach (IWorksheet worksheet in workbook.Worksheets)
-                                    {
-                                        if (worksheet.Visibility == WorksheetVisibility.Visible)
-                                            saveToPdf(worksheet);
-                                    }
-                                }
-                                else
-                                {
-                                    saveToPdf(workbook);
+                       
 
+                        for (int attempt = 1; attempt < 5; attempt++)
+                        {
+                            FileStream excelStream;
+                            Thread.Sleep(5000);
+                            try
+                            {
+                                using (excelStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read))
+                                {
+                                    IWorkbook workbook = application.Workbooks.Open(excelStream, ExcelParseOptions.DoNotParsePivotTable);
+
+                                    if (workbook.Worksheets.Count > 0)
+                                    {
+                                        if (!IsSinglePDFOutput)
+                                        {
+                                            foreach (IWorksheet worksheet in workbook.Worksheets)
+                                            {
+                                                if (worksheet.Visibility == WorksheetVisibility.Visible)
+                                                    saveToPdf(worksheet);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            saveToPdf(workbook);
+
+                                        }
+                                    }
+
+                                    converted = true;
+                                    break;
                                 }
                             }
+                            catch(Exception e)
+                            {
+                                Console.WriteLine($"Exception happened while accessing File {sourceFile}, re-attempting count : {attempt}");
+                                excelStream = null;
 
-                            converted = true;
+                            }
                         }
 
                     }
@@ -93,7 +109,7 @@ namespace MCS.FOI.ExcelToPDF
             string outputFileName = Path.Combine(PdfOutputFilePath, $"{Path.GetFileNameWithoutExtension(ExcelFileName)}_{worksheet.Name}");
             using var pdfDocument = renderer.ConvertToPDF(worksheet, new XlsIORendererSettings() { LayoutOptions = LayoutOptions.FitAllColumnsOnOnePage });
             using var stream = new FileStream($"{outputFileName}.pdf", FileMode.Create, FileAccess.ReadWrite);
-            pdfDocument.Compression = PdfCompressionLevel.Normal;
+            pdfDocument.Compression = PdfCompressionLevel.BestSpeed;
             pdfDocument.Save(stream);
             stream.Dispose();
 
