@@ -24,9 +24,6 @@ namespace MCS.FOI.FileConversion
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                
-
-
 
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 

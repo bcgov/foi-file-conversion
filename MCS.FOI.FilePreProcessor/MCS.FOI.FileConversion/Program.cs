@@ -1,4 +1,5 @@
 using MCS.FOI.ExcelToPDF;
+using MCS.FOI.FileConversion.FileWatcher;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
@@ -24,70 +25,20 @@ namespace MCS.FOI.FileConversion
         {
             //CreateHostBuilder(args).Build().Run();
 
-            using var watcher = new FileSystemWatcher("/app/uploads");
-            watcher.NotifyFilter = NotifyFilters.Attributes
-                                 | NotifyFilters.CreationTime
-                                 | NotifyFilters.DirectoryName
-                                 | NotifyFilters.FileName
-                                 | NotifyFilters.LastAccess
-                                 | NotifyFilters.LastWrite
-                                 | NotifyFilters.Security
-                                 | NotifyFilters.Size;
+            DirectoryListing directoryListing = new DirectoryListing(@"\\sfp.idir.bcgov\S177\S77104\Agile Test");
+            var foldersListed = directoryListing.GetRequestFoldersToWatch();
 
-            watcher.Changed += OnChanged;
-            watcher.Created += OnCreated;
-            watcher.Deleted += OnDeleted;
-            watcher.Renamed += OnRenamed;
-
-            watcher.Filter = "*.xlsx";
-            watcher.IncludeSubdirectories = true;
-            watcher.EnableRaisingEvents = true;
-
-
-
-            //using var watcher = new PhysicalFilesWatcher("/app/uploads",)
-
-            //DoWork();
+            foreach (string folderpath in foldersListed)
+            {
+               var xlsfilewatcher = new FOIFileWatcher(folderpath, new List<string>() { "xls","xlsx","ics" });
+               xlsfilewatcher.StartWatching();
+               
+            }
 
             Console.WriteLine("Press enter to exit.");
             Console.ReadLine();
 
         }
-
-
-        public static void DoWork()
-        {
-            _fileProvider = new PhysicalFileProvider(@"/app/uploads"); // e.g. C:\temp
-            WatchForFileChanges();
-        }
-
-        private static void WatchForFileChanges()
-        {
-            IEnumerable<string> files = Directory.EnumerateFiles("/app/uploads", "*.xlsx", SearchOption.AllDirectories);
-            foreach (string file in files)
-            {
-                if (_files.TryGetValue(file, out DateTime existingTime))
-                {
-                    _files.TryUpdate(file, File.GetLastWriteTime(file), existingTime);
-                }
-                else
-                {
-                    if (File.Exists(file))
-                    {
-                        _files.TryAdd(file, File.GetLastWriteTime(file));
-                    }
-                }
-            }
-            _fileChangeToken = _fileProvider.Watch("**/*.xlsx");
-            _fileChangeToken.RegisterChangeCallback(Notify, default);
-        }
-
-        private static void Notify(object state)
-        {
-            Console.WriteLine("File activity found");
-            WatchForFileChanges();
-        }
-
 
         private static void OnChanged(object sender, FileSystemEventArgs e)
         {
@@ -131,12 +82,14 @@ namespace MCS.FOI.FileConversion
         }
 
 
+
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    //services.AddHostedService<Worker>();
+                    services.AddHostedService<Worker>();
                     services.AddSingleton(typeof(ExcelFileProcessor));
+                    services.AddSingleton(typeof(FileSystemWatcher));
                 });
     }
 }
