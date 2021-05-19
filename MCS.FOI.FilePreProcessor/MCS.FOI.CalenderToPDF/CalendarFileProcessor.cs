@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace MCS.FOI.CalenderToPDF
 {
@@ -51,7 +52,20 @@ namespace MCS.FOI.CalenderToPDF
                 string sourceFile = Path.Combine(SourcePath, FileName);
                 if (File.Exists(sourceFile))
                 {
-                    fileStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read);
+                    for (int attempt = 1; attempt < 5; attempt++)
+                    {
+                        Thread.Sleep(5000);
+                        try
+                        {
+                            fileStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine($"Exception happened while accessing File {sourceFile}, re-attempting count : {attempt}");
+                            fileStream = null;
+
+                        }
+                    }
                     using (StreamReader sr = new StreamReader(fileStream))
                     {
                         ical = sr.ReadToEnd();
