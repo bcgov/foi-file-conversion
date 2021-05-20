@@ -6,7 +6,7 @@ namespace MCS.FOI.ExcelToPDF
 {
     public interface IExcelFileProcessor
     {
-        public bool ConvertToPDF();
+        public (bool, string) ConvertToPDF();
 
         public string ExcelSourceFilePath { get; set; }
 

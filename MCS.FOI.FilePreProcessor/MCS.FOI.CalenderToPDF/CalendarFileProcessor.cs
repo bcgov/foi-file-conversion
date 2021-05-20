@@ -17,6 +17,8 @@ namespace MCS.FOI.CalenderToPDF
         public string DestinationPath { get; set; }
 
         public string FileName { get; set; }
+
+        public string Message { get; set; }
         public CalendarFileProcessor()
         {
 
@@ -26,22 +28,24 @@ namespace MCS.FOI.CalenderToPDF
             this.SourcePath = sourcePath;
             this.DestinationPath = destinationPath;
             this.FileName = fileName;
+            this.Message = string.Empty;
 
         }
 
-        public bool ProcessCalendarFiles()
+        public (bool, string) ProcessCalendarFiles()
         {
             bool isProcessed;
+            
             try
             {
                 string htmlString = ConvertCalendartoHTML();
-                isProcessed = ConvertHTMLtoPDF(htmlString);
+                isProcessed = ConvertHTMLtoPDF(htmlString);       
             }
             catch (Exception ex)
             {
                 throw (ex);
             }
-            return isProcessed;
+            return (isProcessed, Message);
         }
         private string ConvertCalendartoHTML()
         {
@@ -175,6 +179,7 @@ namespace MCS.FOI.CalenderToPDF
             {
                 string error = $"Exception Occured while coverting file at {SourcePath} to HTML , exception :  {ex.Message} , stacktrace : {ex.StackTrace}";
                 Console.WriteLine(error);
+                Message = error;
                 return error;
             }
             finally
@@ -218,12 +223,14 @@ namespace MCS.FOI.CalenderToPDF
                 document.Close(true);
 
                 isConverted = true;
+                Message = $"{SourcePath}\\{FileName} processed successfully!";
             }
             catch (Exception ex)
             {
                 isConverted = false;
                 string error = $"Exception Occured while coverting file at {SourcePath} to PDF , exception :  {ex.Message} , stacktrace : {ex.StackTrace}";
                 Console.WriteLine(error);
+                Message = error;
             }
             finally
             {

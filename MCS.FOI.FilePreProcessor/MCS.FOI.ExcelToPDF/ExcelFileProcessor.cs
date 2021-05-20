@@ -31,11 +31,12 @@ namespace MCS.FOI.ExcelToPDF
         public bool IsSinglePDFOutput { get; set; }
 
         private static object lockObject = new object();
-        public bool ConvertToPDF()
+        public (bool, string) ConvertToPDF()
         {
             bool converted = false;
+            string message = string.Empty;
             try
-            {
+            {                
                 string sourceFile = Path.Combine(ExcelSourceFilePath, ExcelFileName);
                 if (File.Exists(sourceFile))
                 {
@@ -73,12 +74,14 @@ namespace MCS.FOI.ExcelToPDF
                                     }
 
                                     converted = true;
+                                    message = $"{sourceFile} processed successfully!";
                                     break;
                                 }
                             }
                             catch(Exception e)
                             {
-                                Console.WriteLine($"Exception happened while accessing File {sourceFile}, re-attempting count : {attempt}");
+                                message = $"Exception happened while accessing File {sourceFile}, re-attempting count : {attempt}";
+                                Console.WriteLine(message);
                                 excelStream = null;
 
                             }
@@ -88,17 +91,19 @@ namespace MCS.FOI.ExcelToPDF
                 }
                 else
                 {
-                    return converted;
+                    message = $"{sourceFile} does not exist!";
+                    //return converted;
                 }
             }
             catch (Exception ex)
             {
                 converted = false;
-                string error = $"Exception Occured while coverting file at {ExcelSourceFilePath} , exception :  {ex.Message} , stacktrace : {ex.StackTrace}";
-                Console.WriteLine(error);
+                message = $"Exception Occured while coverting file at {ExcelSourceFilePath} , exception :  {ex.Message} , stacktrace : {ex.StackTrace}";
+                Console.WriteLine(message);
+
             }
 
-            return converted;
+            return (converted, message);
         }
 
         private void saveToPdf(IWorksheet worksheet)
