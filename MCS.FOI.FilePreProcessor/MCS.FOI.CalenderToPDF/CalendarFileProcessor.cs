@@ -32,7 +32,7 @@ namespace MCS.FOI.CalenderToPDF
 
         }
 
-        public (bool, string) ProcessCalendarFiles()
+        public (bool, string, string) ProcessCalendarFiles()
         {
             bool isProcessed;
             
@@ -45,7 +45,7 @@ namespace MCS.FOI.CalenderToPDF
             {
                 throw (ex);
             }
-            return (isProcessed, Message);
+            return (isProcessed, Message, DestinationPath);
         }
         private string ConvertCalendartoHTML()
         {

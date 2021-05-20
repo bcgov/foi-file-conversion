@@ -31,7 +31,7 @@ namespace MCS.FOI.ExcelToPDF
         public bool IsSinglePDFOutput { get; set; }
 
         private static object lockObject = new object();
-        public (bool, string) ConvertToPDF()
+        public (bool, string, string) ConvertToPDF()
         {
             bool converted = false;
             string message = string.Empty;
@@ -103,7 +103,7 @@ namespace MCS.FOI.ExcelToPDF
 
             }
 
-            return (converted, message);
+            return (converted, message, PdfOutputFilePath);
         }
 
         private void saveToPdf(IWorksheet worksheet)

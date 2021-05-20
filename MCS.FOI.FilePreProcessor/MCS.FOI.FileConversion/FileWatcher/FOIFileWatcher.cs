@@ -13,7 +13,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
 {
     public class FOIFileWatcher
     {
-        ConcurrentDictionary<string, (DateTime, string, DateTime?, string)> watcherLogger;
+        ConcurrentDictionary<string, (DateTime, string, DateTime?, string, string)> watcherLogger;
         FileSystemWatcher watcher;
         private string PathToWatch { get; set; }
 
@@ -23,12 +23,14 @@ namespace MCS.FOI.FileConversion.FileWatcher
         {
             this.PathToWatch = pathtowatch;
             this.FileTypes = fileTypes;
-            this.watcherLogger = new ConcurrentDictionary<string, (DateTime, string, DateTime?, string)>();
+            this.watcherLogger = new ConcurrentDictionary<string, (DateTime, string, DateTime?, string, string)>();
+            
         }
 
         public void StartWatching()
         {
-
+            //string logFilePath = $"{this.PathToWatch}\\Log";
+            //CSVLogger.CreateCSV(logFilePath);
             foreach (string fileType in FileTypes)
             {
                 watcher = new FileSystemWatcher(this.PathToWatch);
@@ -70,40 +72,46 @@ namespace MCS.FOI.FileConversion.FileWatcher
             Console.WriteLine($"Path to watch is {this.PathToWatch}");
             string logFilePath = $"{e.FullPath.Replace(e.Name, "")}\\Log";
             FileInfo fileInfo = new FileInfo(e.FullPath);
-            CSVLogger.CreateCSV(logFilePath);
+            
             bool isProcessed = false;
             string message = string.Empty;
+            string outputPath = string.Empty;
             Task.Run(() =>
             {
                 if (fileInfo != null)
                 {
-                    watcherLogger.TryAdd(fileInfo.FullName,(fileInfo.CreationTimeUtc, "Created", null, null));
+                    watcherLogger.TryAdd(fileInfo.FullName,(fileInfo.CreationTimeUtc, "Created", null, message, outputPath));
                     extension = fileInfo.Extension;
                     switch (extension)
                     {
                         case FileExtensions.xls:
                         case FileExtensions.xlsx:
-                            watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "In Progress", null, null);
-                            (isProcessed, message) = ProcessExcelFiles(fileInfo);
+                            watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "In Progress", null, message, outputPath);
+                            (isProcessed, message, outputPath) = ProcessExcelFiles(fileInfo);
                             break;
                         case FileExtensions.ics:
-                            watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "In Progress", null, null);
-                            (isProcessed, message) = ProcessCalendarFiles(fileInfo);
+                            watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "In Progress", null, message, outputPath);
+                            (isProcessed, message, outputPath) = ProcessCalendarFiles(fileInfo);
                             break;
                         default:
                             break;
                     }
                     if(isProcessed)
-                        watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "Completed", DateTime.UtcNow, message);
+                        watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "Completed", DateTime.UtcNow, message, outputPath);
                     else
-                        watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "Failed", DateTime.UtcNow, message);
-                }
-            });
-           
+                        watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "Failed", DateTime.UtcNow, message, outputPath);
 
+                    //CSVLogger.UpdateRecords(logFilePath, watcherLogger);
+                    CSVLogger.LogtoCSV(watcherLogger, logFilePath);
+                }
+                
+            });
+
+            //CSVLogger.UpdateRecords(logFilePath, watcherLogger);
+            //CSVLogger.LogtoCSV(watcherLogger, logFilePath);
         }
 
-        private (bool, string) ProcessExcelFiles(FileInfo fileInfo)
+        private (bool, string, string) ProcessExcelFiles(FileInfo fileInfo)
         {
             string sourcePath = fileInfo.FullName.Replace(fileInfo.Name, "");
             ExcelFileProcessor excelFileProcessor = new ExcelFileProcessor();
@@ -114,7 +122,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
             return excelFileProcessor.ConvertToPDF();
         }
 
-        private (bool, string) ProcessCalendarFiles(FileInfo fileInfo)
+        private (bool, string, string) ProcessCalendarFiles(FileInfo fileInfo)
         {
             string sourcePath = fileInfo.FullName.Replace(fileInfo.Name, "");
             CalendarFileProcessor calendarFileProcessor = new CalendarFileProcessor();

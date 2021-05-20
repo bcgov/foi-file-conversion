@@ -17,7 +17,7 @@ namespace MCS.FOI.CalenderToPDF.UnitTests
             calendarFileProcessor.DestinationPath = string.Concat(rootFolder, @"\output\", calendarFileProcessor.SourcePath.Replace(rootFolder, "")); 
             calendarFileProcessor.FileName = "iCalendar.ics";
                      
-            (isProcessed, message) = calendarFileProcessor.ProcessCalendarFiles();
+            (isProcessed, message, calendarFileProcessor.DestinationPath) = calendarFileProcessor.ProcessCalendarFiles();
             Assert.IsTrue(isProcessed == true, $"Calendar to PDF Conversion failed for {calendarFileProcessor.FileName}");
 
             string outputFilePath = Path.Combine(calendarFileProcessor.DestinationPath, $"{Path.GetFileNameWithoutExtension(calendarFileProcessor.FileName)}.pdf");
@@ -35,7 +35,7 @@ namespace MCS.FOI.CalenderToPDF.UnitTests
             calendarFileProcessor.DestinationPath = string.Concat(rootFolder, @"\output\", calendarFileProcessor.SourcePath.Replace(rootFolder, ""));
             calendarFileProcessor.FileName = "FOI-FileConversion Test iCalendar Request.ics";
 
-            (isProcessed, message) = calendarFileProcessor.ProcessCalendarFiles();
+            (isProcessed, message, calendarFileProcessor.DestinationPath) = calendarFileProcessor.ProcessCalendarFiles();
             Assert.IsTrue(isProcessed == true, $"Calendar to PDF Conversion failed for {calendarFileProcessor.FileName}");
 
             string outputFilePath = Path.Combine(calendarFileProcessor.DestinationPath, $"{Path.GetFileNameWithoutExtension(calendarFileProcessor.FileName)}.pdf");
@@ -53,7 +53,7 @@ namespace MCS.FOI.CalenderToPDF.UnitTests
             calendarFileProcessor.DestinationPath = string.Concat(rootFolder, @"\output\", calendarFileProcessor.SourcePath.Replace(rootFolder, ""));
             calendarFileProcessor.FileName = "FOI-FileConversion Test iCalendar Request.ics";
 
-            (isProcessed, message) = calendarFileProcessor.ProcessCalendarFiles();
+            (isProcessed, message, calendarFileProcessor.DestinationPath) = calendarFileProcessor.ProcessCalendarFiles();
             Assert.IsTrue(isProcessed == true, $"Calendar to PDF Conversion failed for {calendarFileProcessor.FileName}");
 
             string outputFilePath = Path.Combine(calendarFileProcessor.DestinationPath, $"{Path.GetFileNameWithoutExtension(calendarFileProcessor.FileName)}.pdf");
@@ -71,7 +71,7 @@ namespace MCS.FOI.CalenderToPDF.UnitTests
             calendarFileProcessor.DestinationPath = string.Concat(rootFolder, @"\output\", calendarFileProcessor.SourcePath.Replace(rootFolder, ""));
             calendarFileProcessor.FileName = "divya.v@aot-technologies.com.ics";
 
-            (isProcessed, message) = calendarFileProcessor.ProcessCalendarFiles();
+            (isProcessed, message, calendarFileProcessor.DestinationPath) = calendarFileProcessor.ProcessCalendarFiles();
             Assert.IsTrue(isProcessed == true, $"Calendar to PDF Conversion failed for {calendarFileProcessor.FileName}");
 
             string outputFilePath = Path.Combine(calendarFileProcessor.DestinationPath, $"{Path.GetFileNameWithoutExtension(calendarFileProcessor.FileName)}.pdf");
