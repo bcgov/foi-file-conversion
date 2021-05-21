@@ -1,16 +1,8 @@
-using MCS.FOI.ExcelToPDF;
-using MCS.FOI.FileConversion.FileWatcher;
+using MCS.FOI.FileConversion.Utilities;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Primitives;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MCS.FOI.FileConversion
 {
@@ -18,8 +10,34 @@ namespace MCS.FOI.FileConversion
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
-            
+
+            var environmentName = Environment.GetEnvironmentVariable("EXEC_ENV");
+
+            if (!string.IsNullOrEmpty(environmentName))
+            {
+                var configurationbuilder = new ConfigurationBuilder()
+                        .AddJsonFile($"appsettings.json", true, true)
+                        .AddJsonFile($"appsettings.{environmentName}.json", true, true)
+                        .AddEnvironmentVariables().Build();
+
+                ConversionSettings.DeploymentPlatform = environmentName.ToLower().StartsWith("linux") ? Platform.Linux : Platform.Windows;
+                ConversionSettings.BaseWatchPath = configurationbuilder.GetSection("ConversionSettings:BaseWatchPath").Value;
+                ConversionSettings.FolderSearchPattern = configurationbuilder.GetSection("ConversionSettings:FolderSearchPath").Value;
+                ConversionSettings.FailureAttemptCount = configurationbuilder.GetSection("ConversionSettings:FailureAttemptCount").Value;
+                ConversionSettings.WaitTimeInMilliSeconds = configurationbuilder.GetSection("ConversionSettings:WaitTimeInMilliSeconds").Value;
+                int.TryParse(configurationbuilder.GetSection("ConversionSettings:DayCountBehindToStart").Value, out int count);
+                ConversionSettings.DayCountBehindToStart = count;
+
+                CreateHostBuilder(args).Build().Run();
+
+
+            }
+            else
+            {
+                Console.WriteLine($"Missing Environment Variable 'EXEC_ENV', application requires this ENV VAR to starts with ");
+            }
+
+
             Console.WriteLine("Press enter to exit.");
             Console.ReadLine();
 
@@ -29,8 +47,8 @@ namespace MCS.FOI.FileConversion
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<Worker>();
-                    
-                   
+
+
                 });
     }
 }

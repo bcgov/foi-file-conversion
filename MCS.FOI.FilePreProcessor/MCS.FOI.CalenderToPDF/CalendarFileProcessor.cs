@@ -16,7 +16,16 @@ namespace MCS.FOI.CalenderToPDF
 
         public string DestinationPath { get; set; }
 
+        public int FailureAttemptCount { get; set; }
+
+        public int WaitTimeinMilliSeconds { get; set; }
+
         public string FileName { get; set; }
+
+
+        public Platform DeploymentPlatform { get; set; }
+
+
 
         public string Message { get; set; }
         public CalendarFileProcessor()
@@ -56,9 +65,9 @@ namespace MCS.FOI.CalenderToPDF
                 string sourceFile = Path.Combine(SourcePath, FileName);
                 if (File.Exists(sourceFile))
                 {
-                    for (int attempt = 1; attempt < 5; attempt++)
+                    for (int attempt = 1; attempt < FailureAttemptCount; attempt++)
                     {
-                        Thread.Sleep(5000);
+                        Thread.Sleep(WaitTimeinMilliSeconds);
                         try
                         {
                             fileStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read);
@@ -207,7 +216,16 @@ namespace MCS.FOI.CalenderToPDF
                 //string path = @"" + Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName + "\\QtBinariesWindows";
                 //string path = @"" + Environment.CurrentDirectory + "\\QtBinariesWindows";
                 //webKitConverterSettings.WebKitPath = path; // $@"/QtBinariesLinux";
-                webKitConverterSettings.WebKitPath =  $@"/app/QtBinariesLinux";
+
+                if (DeploymentPlatform == Platform.Linux)
+                {
+                    webKitConverterSettings.WebKitPath = $@"/app/QtBinariesLinux";
+                }
+                else
+                {
+                    string path = @"" + Environment.CurrentDirectory + "\\QtBinariesWindows";
+                    webKitConverterSettings.WebKitPath = path; 
+                }
 
                 //Assign WebKit converter settings to HTML converter
                 htmlConverter.ConverterSettings = webKitConverterSettings;
@@ -250,5 +268,11 @@ namespace MCS.FOI.CalenderToPDF
                 Directory.CreateDirectory(DestinationPath);
         }
 
+    }
+
+    public enum Platform
+    {
+        Linux = 0,
+        Windows = 1
     }
 }

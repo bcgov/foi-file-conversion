@@ -27,6 +27,10 @@ namespace MCS.FOI.ExcelToPDF
 
         public bool IsSinglePDFOutput { get; set; }
 
+        public int FailureAttemptCount { get; set; }
+
+        public int WaitTimeinMilliSeconds { get; set; }
+
         private static object lockObject = new object();
         public (bool, string, string) ConvertToPDF()
         {
@@ -41,10 +45,10 @@ namespace MCS.FOI.ExcelToPDF
                     {
                         IApplication application = excelEngine.Excel;
                        
-                        for (int attempt = 1; attempt < 5; attempt++)
+                        for (int attempt = 1; attempt < FailureAttemptCount; attempt++)
                         {
                             FileStream excelStream;
-                            Thread.Sleep(5000);
+                            Thread.Sleep(WaitTimeinMilliSeconds);
                             try
                             {
                                 using (excelStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read))

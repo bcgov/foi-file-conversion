@@ -14,6 +14,10 @@ namespace MCS.FOI.CalenderToPDF
 
         public string FileName { get; set; }
 
+        public int FailureAttemptCount { get; set; }
+
+        public int WaitTimeinMilliSeconds { get; set; }
+
         public string Message { get; set; }
     }
 }
