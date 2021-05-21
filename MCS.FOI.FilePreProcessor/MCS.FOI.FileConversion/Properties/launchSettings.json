@@ -3,11 +3,16 @@
     "MCS.FOI.FileConversion": {
       "commandName": "Project",
       "environmentVariables": {
+        "EXEC_ENV": "WindowsDevelopment",
         "DOTNET_ENVIRONMENT": "Development"
       }
     },
     "Docker": {
-      "commandName": "Docker"
+      "commandName": "Docker",
+      "environmentVariables": {
+        "EXEC_ENV": "LinuxDevelopment",
+        "DOTNET_ENVIRONMENT": "Development"
+      }
     }
   }
 }
