@@ -87,7 +87,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
         }
 
 
-        private bool ProcessExcelFiles(FileInfo fileInfo)
+        private (bool, string, string) ProcessExcelFiles(FileInfo fileInfo)
         {
 
             var sourcePath = fileInfo.FullName.Replace(fileInfo.Name, "");

@@ -67,8 +67,9 @@ namespace MCS.FOI.CalenderToPDF
                         catch (Exception e)
                         {
                             Console.WriteLine($"Exception happened while accessing File {sourceFile}, re-attempting count : {attempt}");
-                            fileStream.Dispose();
-                            fileStream = null;
+                            if(fileStream != null)
+                                fileStream.Dispose();
+                            //fileStream = null;
 
                         }
                     }
@@ -204,9 +205,9 @@ namespace MCS.FOI.CalenderToPDF
 
                 //TODO: The path needs to be replaced with @"/QtBinariesLinux"; when containerizing the code
                 //string path = @"" + Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName + "\\QtBinariesWindows";
-                //string path = @"" + Environment.CurrentDirectory + "\\QtBinariesWindows";
-                //webKitConverterSettings.WebKitPath = path; // $@"/QtBinariesLinux";
-                webKitConverterSettings.WebKitPath =  $@"/app/QtBinariesLinux";
+                string path = @"" + Environment.CurrentDirectory + "\\QtBinariesWindows";
+                webKitConverterSettings.WebKitPath = path; // $@"/QtBinariesLinux";
+                //webKitConverterSettings.WebKitPath =  $@"/app/QtBinariesLinux";
 
                 //Assign WebKit converter settings to HTML converter
                 htmlConverter.ConverterSettings = webKitConverterSettings;
