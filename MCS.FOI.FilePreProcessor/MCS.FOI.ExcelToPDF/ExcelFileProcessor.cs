@@ -32,11 +32,12 @@ namespace MCS.FOI.ExcelToPDF
         public int WaitTimeinMilliSeconds { get; set; }
 
         private static object lockObject = new object();
-        public bool ConvertToPDF()
+        public (bool, string, string) ConvertToPDF()
         {
             bool converted = false;
+            string message = string.Empty;
             try
-            {
+            {                
                 string sourceFile = Path.Combine(ExcelSourceFilePath, ExcelFileName);
                 if (File.Exists(sourceFile))
                 {
@@ -72,12 +73,14 @@ namespace MCS.FOI.ExcelToPDF
                                     }
 
                                     converted = true;
+                                    message = $"{sourceFile} processed successfully!";
                                     break;
                                 }
                             }
                             catch(Exception e)
                             {
-                                Console.WriteLine($"Exception happened while accessing File {sourceFile}, re-attempting count : {attempt}");
+                                message = $"Exception happened while accessing File {sourceFile}, re-attempting count : {attempt}";
+                                Console.WriteLine(message);
                                 excelStream = null;
 
                             }
@@ -87,7 +90,8 @@ namespace MCS.FOI.ExcelToPDF
                 }
                 else
                 {
-                    return converted;
+                    message = $"{sourceFile} does not exist!";
+                    //return converted;
                 }
             }
             catch (Exception ex)
@@ -97,7 +101,7 @@ namespace MCS.FOI.ExcelToPDF
                 Console.WriteLine(error);
             }
 
-            return converted;
+            return (converted, message, PdfOutputFilePath);
         }
 
         private void saveToPdf(IWorksheet worksheet)

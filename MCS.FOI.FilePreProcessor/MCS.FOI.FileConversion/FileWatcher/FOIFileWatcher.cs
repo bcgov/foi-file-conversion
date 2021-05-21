@@ -1,6 +1,8 @@
 ﻿using MCS.FOI.CalenderToPDF;
 using MCS.FOI.ExcelToPDF;
+using MCS.FOI.FileConversion.Logger;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -11,8 +13,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
 {
     public class FOIFileWatcher
     {
-        Dictionary<string, (DateTime, string, string, DateTime?)> watchStatuses;
-
+        ConcurrentDictionary<string, (DateTime, string, DateTime?, string, string)> watcherLogger;
         FileSystemWatcher watcher;
         private string PathToWatch { get; set; }
 
@@ -22,12 +23,14 @@ namespace MCS.FOI.FileConversion.FileWatcher
         {
             this.PathToWatch = pathtowatch;
             this.FileTypes = fileTypes;
-            watchStatuses = new Dictionary<string, (DateTime, string, string, DateTime?)>();
+            this.watcherLogger = new ConcurrentDictionary<string, (DateTime, string, DateTime?, string, string)>();
+            
         }
 
         public void StartWatching()
         {
-
+            //string logFilePath = $"{this.PathToWatch}\\Log";
+            //CSVLogger.CreateCSV(logFilePath);
             foreach (string fileType in FileTypes)
             {
                 watcher = new FileSystemWatcher(this.PathToWatch);
@@ -55,75 +58,70 @@ namespace MCS.FOI.FileConversion.FileWatcher
 
         private void OnCreated(object sender, FileSystemEventArgs e)
         {
-
-            string extension = string.Empty;
-            string sourcePath = string.Empty;
-            string fileName = string.Empty;
+            string extension = string.Empty;            
             string value = $"Created: {e.FullPath}";
             Console.WriteLine(value);
             Console.WriteLine($"Path to watch is {this.PathToWatch}");
-
+            string logFilePath = $"{e.FullPath.Replace(e.Name, "")}\\Log";
             FileInfo fileInfo = new FileInfo(e.FullPath);
-            if (fileInfo != null)
-            {
-                extension = fileInfo.Extension;
-                fileName = fileInfo.Name;
-                sourcePath = e.FullPath.Replace(fileInfo.Name, "");
-                watchStatuses.Add(e.FullPath, (fileInfo.CreationTimeUtc, "Created", "", null));
-            }
+            
+            bool isProcessed = false;
+            string message = string.Empty;
+            string outputPath = string.Empty;
             Task.Run(() =>
             {
-
-                switch (extension)
+                if (fileInfo != null)
                 {
-                    case FileExtensions.xls:
-                    case FileExtensions.xlsx:
+                    watcherLogger.TryAdd(fileInfo.FullName,(fileInfo.CreationTimeUtc, "Created", null, message, outputPath));
+                    extension = fileInfo.Extension;
+                    switch (extension)
+                    {
+                        case FileExtensions.xls:
+                        case FileExtensions.xlsx:
+                            watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "In Progress", null, message, outputPath);
+                            (isProcessed, message, outputPath) = ProcessExcelFiles(fileInfo);
+                            break;
+                        case FileExtensions.ics:
+                            watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "In Progress", null, message, outputPath);
+                            (isProcessed, message, outputPath) = ProcessCalendarFiles(fileInfo);
+                            break;
+                        default:
+                            break;
+                    }
+                    if(isProcessed)
+                        watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "Completed", DateTime.UtcNow, message, outputPath);
+                    else
+                        watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "Failed", DateTime.UtcNow, message, outputPath);
 
-                        watchStatuses[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "InProgress", "", null);
-
-                        bool status = ProcessExcelFiles(fileInfo);
-
-                        if (status)
-                            watchStatuses[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "Completed", "", DateTime.Now);
-
-                        break;
-                    case FileExtensions.ics:
-
-                        ProcessCalendarFiles(fileInfo);
-
-                        break;
-                    default:
-                        break;
+                    //CSVLogger.UpdateRecords(logFilePath, watcherLogger);
+                    CSVLogger.LogtoCSV(watcherLogger, logFilePath);
                 }
-
+                
             });
 
+            //CSVLogger.UpdateRecords(logFilePath, watcherLogger);
+            //CSVLogger.LogtoCSV(watcherLogger, logFilePath);
         }
 
-        private bool ProcessExcelFiles(FileInfo fileInfo)
+        private (bool, string, string) ProcessExcelFiles(FileInfo fileInfo)
         {
-
-            var sourcePath = fileInfo.FullName.Replace(fileInfo.Name, "");
-            var fileName = fileInfo.Name;
+            string sourcePath = fileInfo.FullName.Replace(fileInfo.Name, "");
             ExcelFileProcessor excelFileProcessor = new ExcelFileProcessor();
-            excelFileProcessor.ExcelFileName = fileName;
+            excelFileProcessor.ExcelFileName = fileInfo.Name;
             excelFileProcessor.IsSinglePDFOutput = false;
             excelFileProcessor.ExcelSourceFilePath = sourcePath;
             excelFileProcessor.PdfOutputFilePath = getPdfOutputPath(excelFileProcessor.ExcelSourceFilePath);
-
             return excelFileProcessor.ConvertToPDF();
         }
 
-        private void ProcessCalendarFiles(FileInfo fileInfo)
+        private (bool, string, string) ProcessCalendarFiles(FileInfo fileInfo)
         {
-            var sourcePath = fileInfo.FullName.Replace(fileInfo.Name, "");
-            var fileName = fileInfo.Name;
-
+            string sourcePath = fileInfo.FullName.Replace(fileInfo.Name, "");
             CalendarFileProcessor calendarFileProcessor = new CalendarFileProcessor();
-            calendarFileProcessor.FileName = fileName;
+            calendarFileProcessor.FileName = fileInfo.Name;
             calendarFileProcessor.SourcePath = sourcePath;
             calendarFileProcessor.DestinationPath = getPdfOutputPath(calendarFileProcessor.SourcePath);
-            calendarFileProcessor.ProcessCalendarFiles();
+            return calendarFileProcessor.ProcessCalendarFiles();
         }
 
         private void OnError(object sender, ErrorEventArgs e) =>

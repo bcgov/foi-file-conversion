@@ -26,6 +26,8 @@ namespace MCS.FOI.CalenderToPDF
         public Platform DeploymentPlatform { get; set; }
 
 
+
+        public string Message { get; set; }
         public CalendarFileProcessor()
         {
 
@@ -35,22 +37,24 @@ namespace MCS.FOI.CalenderToPDF
             this.SourcePath = sourcePath;
             this.DestinationPath = destinationPath;
             this.FileName = fileName;
+            this.Message = string.Empty;
 
         }
 
-        public bool ProcessCalendarFiles()
+        public (bool, string, string) ProcessCalendarFiles()
         {
             bool isProcessed;
+            
             try
             {
                 string htmlString = ConvertCalendartoHTML();
-                isProcessed = ConvertHTMLtoPDF(htmlString);
+                isProcessed = ConvertHTMLtoPDF(htmlString);       
             }
             catch (Exception ex)
             {
                 throw (ex);
             }
-            return isProcessed;
+            return (isProcessed, Message, DestinationPath);
         }
         private string ConvertCalendartoHTML()
         {
@@ -72,8 +76,9 @@ namespace MCS.FOI.CalenderToPDF
                         catch (Exception e)
                         {
                             Console.WriteLine($"Exception happened while accessing File {sourceFile}, re-attempting count : {attempt}");
-                            fileStream.Dispose();
-                            fileStream = null;
+                            if(fileStream != null)
+                                fileStream.Dispose();
+                            //fileStream = null;
 
                         }
                     }
@@ -186,6 +191,7 @@ namespace MCS.FOI.CalenderToPDF
             {
                 string error = $"Exception Occured while coverting file at {SourcePath} to HTML , exception :  {ex.Message} , stacktrace : {ex.StackTrace}";
                 Console.WriteLine(error);
+                Message = error;
                 return error;
             }
             finally
@@ -228,7 +234,7 @@ namespace MCS.FOI.CalenderToPDF
                 htmlConverter.ConverterSettings.PdfPageSize = PdfPageSize.A4;
 
                 //Convert HTML string to PDF
-                PdfDocument document = htmlConverter.Convert(strHTML, SourcePath);
+                PdfDocument document = htmlConverter.Convert(strHTML, "");
 
                 CreateOutputFolder();
                 string outputPath = Path.Combine(DestinationPath, $"{Path.GetFileNameWithoutExtension(FileName)}.pdf");
@@ -239,12 +245,14 @@ namespace MCS.FOI.CalenderToPDF
                 document.Close(true);
 
                 isConverted = true;
+                Message = $"{SourcePath}\\{FileName} processed successfully!";
             }
             catch (Exception ex)
             {
                 isConverted = false;
                 string error = $"Exception Occured while coverting file at {SourcePath} to PDF , exception :  {ex.Message} , stacktrace : {ex.StackTrace}";
                 Console.WriteLine(error);
+                Message = error;
             }
             finally
             {

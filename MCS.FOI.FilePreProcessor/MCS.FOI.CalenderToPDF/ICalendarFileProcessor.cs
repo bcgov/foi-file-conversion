@@ -6,7 +6,7 @@ namespace MCS.FOI.CalenderToPDF
 {
     public interface ICalendarFileProcessor
     {
-        public bool ProcessCalendarFiles();       
+        public (bool, string, string) ProcessCalendarFiles();       
 
         public string SourcePath { get; set; }
 
@@ -17,5 +17,7 @@ namespace MCS.FOI.CalenderToPDF
         public int FailureAttemptCount { get; set; }
 
         public int WaitTimeinMilliSeconds { get; set; }
+
+        public string Message { get; set; }
     }
 }
