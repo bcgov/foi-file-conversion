@@ -55,3 +55,4 @@ bld/
 /MCS.FOI.FilePreProcessor/MCS.FOI.ExcelToPDFUnitTests/obj
 /MCS.FOI.FilePreProcessor/.vs/MCS.FOI.FilePreProcessor/v16/TestStore/0
 /MCS.FOI.FilePreProcessor/MCS.FOI.ExcelToPDFUnitTests/SourceExcel/output
+/MCS.FOI.FilePreProcessor/MCS.FOI.FileConversion/shareddoc

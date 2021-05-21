@@ -1,6 +1,8 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 FROM mcr.microsoft.com/dotnet/runtime:3.1 AS base
+RUN apt-get update -y && apt-get install libfontconfig -y 
+ENV LANG="en_US.UTF-8" 
 WORKDIR /app
 ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build

@@ -27,16 +27,21 @@ namespace MCS.FOI.FileConversion
             while (!stoppingToken.IsCancellationRequested)
             {
 
-                logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                logger.LogInformation("FOI File Watcher running at: {time}", DateTimeOffset.Now);
 
-                var foldersListed = DirectoryListing.GetRequestFoldersToWatch(@"\\sfp.idir.bcgov\S177\S77104\Agile Test");
+                //var foldersListed = DirectoryListing.GetRequestFoldersToWatch(@"\\sfp.idir.bcgov\S177\S77104\Agile Test");
+                var foldersListed = DirectoryListing.GetRequestFoldersToWatch(@"/app/shareddoc");
 
                 foreach (string folderpath in foldersListed)
                 {
                     if (!folderWatchstatus.ContainsKey(folderpath))
                     {
-                        var xlsfilewatcher = new FOIFileWatcher(folderpath, new List<string>() { "xls", "xlsx", "ics" });
-                        xlsfilewatcher.StartWatching();
+                        //var filewatcher = new FOIFileWatcher(folderpath, new List<string>() { "xls", "xlsx", "ics" });
+                        //filewatcher.StartWatching();
+
+                        var filewatcher = new FOIFileWatcherLinuxBased(folderpath, new List<string>() { "xls", "xlsx", "ics" });
+                        filewatcher.StartWatching();
+
                         folderWatchstatus.Add(folderpath, "Watching");
                     }
 
