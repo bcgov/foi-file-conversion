@@ -22,9 +22,15 @@ namespace MCS.FOI.FileConversion
 
                 ConversionSettings.DeploymentPlatform = environmentName.ToLower().StartsWith("linux") ? Platform.Linux : Platform.Windows;
                 ConversionSettings.BaseWatchPath = configurationbuilder.GetSection("ConversionSettings:BaseWatchPath").Value;
-                ConversionSettings.FolderSearchPattern = configurationbuilder.GetSection("ConversionSettings:FolderSearchPath").Value;
-                ConversionSettings.FailureAttemptCount = configurationbuilder.GetSection("ConversionSettings:FailureAttemptCount").Value;
-                ConversionSettings.WaitTimeInMilliSeconds = configurationbuilder.GetSection("ConversionSettings:WaitTimeInMilliSeconds").Value;
+                ConversionSettings.FolderSearchPattern = configurationbuilder.GetSection("ConversionSettings:FolderSearchPattern").Value;
+
+                int.TryParse(configurationbuilder.GetSection("ConversionSettings:FailureAttemptCount").Value, out int faitureattempt);
+
+                ConversionSettings.FailureAttemptCount = faitureattempt;
+
+                int.TryParse(configurationbuilder.GetSection("ConversionSettings:WaitTimeInMilliSeconds").Value, out int waittimemilliseconds);
+                ConversionSettings.WaitTimeInMilliSeconds = waittimemilliseconds;
+
                 int.TryParse(configurationbuilder.GetSection("ConversionSettings:DayCountBehindToStart").Value, out int count);
                 ConversionSettings.DayCountBehindToStart = count;
 

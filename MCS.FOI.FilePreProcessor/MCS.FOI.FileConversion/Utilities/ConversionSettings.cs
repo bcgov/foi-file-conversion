@@ -13,9 +13,9 @@ namespace MCS.FOI.FileConversion.Utilities
 
         public static string FolderSearchPattern { get; set; }
 
-        public static string FailureAttemptCount { get; set; }
+        public static int FailureAttemptCount { get; set; }
 
-        public static string WaitTimeInMilliSeconds { get; set; }
+        public static int WaitTimeInMilliSeconds { get; set; }
 
         public static int DayCountBehindToStart { get; set; }
 

@@ -1,6 +1,7 @@
 ﻿using MCS.FOI.CalenderToPDF;
 using MCS.FOI.ExcelToPDF;
 using MCS.FOI.FileConversion.Logger;
+using MCS.FOI.FileConversion.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -29,8 +30,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
 
         public void StartWatching()
         {
-            //string logFilePath = $"{this.PathToWatch}\\Log";
-            //CSVLogger.CreateCSV(logFilePath);
+           
             foreach (string fileType in FileTypes)
             {
                 watcher = new FileSystemWatcher(this.PathToWatch);
@@ -99,8 +99,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
                 
             });
 
-            //CSVLogger.UpdateRecords(logFilePath, watcherLogger);
-            //CSVLogger.LogtoCSV(watcherLogger, logFilePath);
+            
         }
 
         private (bool, string, string) ProcessExcelFiles(FileInfo fileInfo)
@@ -111,6 +110,8 @@ namespace MCS.FOI.FileConversion.FileWatcher
             excelFileProcessor.IsSinglePDFOutput = false;
             excelFileProcessor.ExcelSourceFilePath = sourcePath;
             excelFileProcessor.PdfOutputFilePath = getPdfOutputPath(excelFileProcessor.ExcelSourceFilePath);
+            excelFileProcessor.WaitTimeinMilliSeconds = ConversionSettings.WaitTimeInMilliSeconds;
+            excelFileProcessor.FailureAttemptCount = ConversionSettings.FailureAttemptCount;
             return excelFileProcessor.ConvertToPDF();
         }
 
@@ -121,6 +122,9 @@ namespace MCS.FOI.FileConversion.FileWatcher
             calendarFileProcessor.FileName = fileInfo.Name;
             calendarFileProcessor.SourcePath = sourcePath;
             calendarFileProcessor.DestinationPath = getPdfOutputPath(calendarFileProcessor.SourcePath);
+            calendarFileProcessor.WaitTimeinMilliSeconds = ConversionSettings.WaitTimeInMilliSeconds;
+            calendarFileProcessor.FailureAttemptCount = ConversionSettings.FailureAttemptCount;
+            calendarFileProcessor.DeploymentPlatform = CalenderToPDF.Platform.Windows;
             return calendarFileProcessor.ProcessCalendarFiles();
         }
 

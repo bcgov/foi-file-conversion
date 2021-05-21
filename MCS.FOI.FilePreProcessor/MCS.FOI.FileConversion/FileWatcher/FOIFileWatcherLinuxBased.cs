@@ -1,13 +1,13 @@
 ﻿using MCS.FOI.CalenderToPDF;
 using MCS.FOI.ExcelToPDF;
 using MCS.FOI.FileConversion.Logger;
+using MCS.FOI.FileConversion.Utilities;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace MCS.FOI.FileConversion.FileWatcher
 {
@@ -72,7 +72,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
             _fileProvider.UsePollingFileWatcher = true;
             _fileProvider.UseActivePolling = true;
 
-            switch (fileType)
+            switch ($".{fileType}")
             {
                 case FileExtensions.xls:
                     _fileChangeToken.RegisterChangeCallback(XLSEvent, fileType);
@@ -100,7 +100,8 @@ namespace MCS.FOI.FileConversion.FileWatcher
             excelFileProcessor.IsSinglePDFOutput = false;
             excelFileProcessor.ExcelSourceFilePath = sourcePath;
             excelFileProcessor.PdfOutputFilePath = getPdfOutputPath(excelFileProcessor.ExcelSourceFilePath);
-
+            excelFileProcessor.WaitTimeinMilliSeconds = ConversionSettings.WaitTimeInMilliSeconds;
+            excelFileProcessor.FailureAttemptCount = ConversionSettings.FailureAttemptCount;
             return excelFileProcessor.ConvertToPDF();
         }
 
@@ -113,6 +114,9 @@ namespace MCS.FOI.FileConversion.FileWatcher
             calendarFileProcessor.FileName = fileName;
             calendarFileProcessor.SourcePath = sourcePath;
             calendarFileProcessor.DestinationPath = getPdfOutputPath(calendarFileProcessor.SourcePath);
+            calendarFileProcessor.WaitTimeinMilliSeconds = ConversionSettings.WaitTimeInMilliSeconds;
+            calendarFileProcessor.FailureAttemptCount = ConversionSettings.FailureAttemptCount;
+            calendarFileProcessor.DeploymentPlatform = CalenderToPDF.Platform.Linux;
             return calendarFileProcessor.ProcessCalendarFiles();
         }
 
@@ -156,7 +160,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
             bool isProcessed = false;
             string message = string.Empty;
             string outputPath = string.Empty;
-            string logFilePath = $"{fileInfo.FullName.Replace(fileInfo.Name, "")}\\Log";
+            string logFilePath = $"{fileInfo.FullName.Replace(fileInfo.Name, "")}/Log";
 
             watcherLogger.TryAdd(fileInfo.FullName, (fileInfo.CreationTimeUtc, "Created", null, message, outputPath));
             switch (fileInfo.Extension)

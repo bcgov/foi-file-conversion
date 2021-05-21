@@ -58,7 +58,7 @@ namespace MCS.FOI.CalenderToPDF
         }
         private string ConvertCalendartoHTML()
         {
-            FileStream fileStream = null;
+           
             try
             {
                 string ical = string.Empty;
@@ -70,22 +70,21 @@ namespace MCS.FOI.CalenderToPDF
                         Thread.Sleep(WaitTimeinMilliSeconds);
                         try
                         {
-                            fileStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read);
+                            using (FileStream fileStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read))
+                            {
+                                using (StreamReader sr = new StreamReader(fileStream))
+                                {
+                                    ical = sr.ReadToEnd();
+                                }
+                            }
                             break;
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine($"Exception happened while accessing File {sourceFile}, re-attempting count : {attempt}");
-                            if(fileStream != null)
-                                fileStream.Dispose();
-                            //fileStream = null;
-
+                            Console.WriteLine($"Exception happened while accessing File {sourceFile}, re-attempting count : {attempt}");                                                   
                         }
                     }
-                    using (StreamReader sr = new StreamReader(fileStream))
-                    {
-                        ical = sr.ReadToEnd();
-                    }
+                   
                     Calendar calendar = Calendar.Load(ical);
                     var events = calendar.Events;
                     StringBuilder htmlString = new StringBuilder();
@@ -194,11 +193,7 @@ namespace MCS.FOI.CalenderToPDF
                 Message = error;
                 return error;
             }
-            finally
-            {
-                if (fileStream != null)
-                    fileStream.Dispose();
-            }
+            
         }
 
         private bool ConvertHTMLtoPDF(string strHTML)

@@ -1,12 +1,8 @@
 ﻿using CsvHelper;
-using CsvHelper.Configuration;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
-using System.Threading;
 
 namespace MCS.FOI.FileConversion.Logger
 {
@@ -20,10 +16,9 @@ namespace MCS.FOI.FileConversion.Logger
                 Directory.CreateDirectory(logFilePath);
             if (!File.Exists(fileName))
             {
-                var file = File.Create(fileName);
+                using var file = File.Create(fileName);
                 file.Close();
-                //string csvHeader = $"\"File Name\",\"Created UTC\",\"Status\",\"Processed UTC\",\"Comments\"{Environment.NewLine}";
-                //File.WriteAllText(fileName, csvHeader);
+                
             }           
             return fileName;
         }
@@ -59,60 +54,6 @@ namespace MCS.FOI.FileConversion.Logger
             catch (Exception ex)
             {
                 Console.WriteLine($"Error occured while writing to csv. {ex.Message}");
-            }
-        }
-
-
-        public static async void UpdateRecords(string logFilePath, ConcurrentDictionary<string, (DateTime, string, DateTime?, string)> watcherLogger)
-        {
-            string fileName = $"{logFilePath}\\log.csv";
-            try
-            {
-                string[] lines = await File.ReadAllLinesAsync(fileName);
-
-                List<string> updatedLines = new List<string>(lines);
-                foreach (var log in watcherLogger)
-                {
-                    for (int i = 0; i < lines.Length; i++)
-                    {
-                        if (lines[i].Contains(log.Key))
-                        {
-                            updatedLines.RemoveAt(i);
-                        }
-                    }
-                    updatedLines.Add($"{log.Key},{log.Value.Item1},{log.Value.Item2},{log.Value.Item3},{log.Value.Item4}");
-                }
-
-                for (int attempt = 1; attempt < 5; attempt++)
-                {
-                    Thread.Sleep(5000);
-                    try
-                    {
-                        using (var fileWriter = new StreamWriter(fileName))
-                        {
-                            foreach (var item in updatedLines)
-                            {
-                                if (!string.IsNullOrEmpty(item))
-                                {
-                                    await fileWriter.WriteAsync(item);
-                                    await fileWriter.WriteAsync(Environment.NewLine);
-                                }
-                            }
-
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error occured while writing to CSV, re-attempting count : {attempt}");
-
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error occured while writing to CSV: {ex.Message}");
-
             }
         }
     }
