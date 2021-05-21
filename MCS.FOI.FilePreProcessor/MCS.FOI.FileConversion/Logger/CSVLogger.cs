@@ -24,34 +24,14 @@ namespace MCS.FOI.FileConversion.Logger
                 file.Close();
                 //string csvHeader = $"\"File Name\",\"Created UTC\",\"Status\",\"Processed UTC\",\"Comments\"{Environment.NewLine}";
                 //File.WriteAllText(fileName, csvHeader);
-            }
-            //AddHeader(fileName);
+            }           
             return fileName;
         }
-
-        public static void AddHeader(string filePath)
-        {
-            using (var writer = new StreamWriter(filePath))
-            using (var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture))
-            {
-                csvWriter.WriteField("File Name");
-                csvWriter.WriteField("Created UTC");
-                csvWriter.WriteField("Status");
-                csvWriter.WriteField("Processed UTC");
-                csvWriter.WriteField("Comments");
-                csvWriter.WriteField("Ouput File Path");
-                writer.Flush();
-            }
-
-        }
-
         public static async void LogtoCSV(ConcurrentDictionary<string, (DateTime, string, DateTime?, string, string)> watcherLogger, string logFilePath)
         {
             try
             {
                 string fileName = CreateCSV(logFilePath);
-                //string fileName = $"{logFilePath}\\log.csv";
-
                 using (var writer = new StreamWriter(fileName))
                 using (var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture))
                 {

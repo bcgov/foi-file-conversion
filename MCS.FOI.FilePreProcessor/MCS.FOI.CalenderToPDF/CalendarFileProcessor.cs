@@ -62,6 +62,7 @@ namespace MCS.FOI.CalenderToPDF
                         try
                         {
                             fileStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read);
+                            break;
                         }
                         catch (Exception e)
                         {
@@ -200,8 +201,7 @@ namespace MCS.FOI.CalenderToPDF
 
                 WebKitConverterSettings webKitConverterSettings = new WebKitConverterSettings() { EnableHyperLink = true };
 
-                //TODO: The path needs to be replaced with @"/QtBinariesLinux"; when containerizing the code
-                //string path = @"" + Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName + "\\QtBinariesWindows";
+                //TODO: The path needs to be replaced with @"/QtBinariesLinux"; when containerizing the code                
                 string path = @"" + Environment.CurrentDirectory + "\\QtBinariesWindows";
                 webKitConverterSettings.WebKitPath = path; // $@"/QtBinariesLinux";
 
@@ -212,7 +212,7 @@ namespace MCS.FOI.CalenderToPDF
                 htmlConverter.ConverterSettings.PdfPageSize = PdfPageSize.A4;
 
                 //Convert HTML string to PDF
-                PdfDocument document = htmlConverter.Convert(strHTML, SourcePath);
+                PdfDocument document = htmlConverter.Convert(strHTML, "");
 
                 CreateOutputFolder();
                 string outputPath = Path.Combine(DestinationPath, $"{Path.GetFileNameWithoutExtension(FileName)}.pdf");
