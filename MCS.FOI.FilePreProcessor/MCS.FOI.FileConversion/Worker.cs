@@ -29,22 +29,30 @@ namespace MCS.FOI.FileConversion
 
                 logger.LogInformation("FOI File Watcher running at: {time}", DateTimeOffset.Now);
 
-                //var foldersListed = DirectoryListing.GetRequestFoldersToWatch(@"\\sfp.idir.bcgov\S177\S77104\Agile Test");
-                var foldersListed = DirectoryListing.GetRequestFoldersToWatch(@"/app/shareddoc");
-
-                foreach (string folderpath in foldersListed)
+                try
                 {
-                    if (!folderWatchstatus.ContainsKey(folderpath))
+
+                    //var foldersListed = DirectoryListing.GetRequestFoldersToWatch(@"\\sfp.idir.bcgov\S177\S77104\Agile Test");
+                    var foldersListed = DirectoryListing.GetRequestFoldersToWatch(@"/app/shareddoc");
+
+                    foreach (string folderpath in foldersListed)
                     {
-                        //var filewatcher = new FOIFileWatcher(folderpath, new List<string>() { "xls", "xlsx", "ics" });
-                        //filewatcher.StartWatching();
+                        if (!folderWatchstatus.ContainsKey(folderpath))
+                        {
+                            //var filewatcher = new FOIFileWatcher(folderpath, new List<string>() { "xls", "xlsx", "ics" });
+                            //filewatcher.StartWatching();
 
-                        var filewatcher = new FOIFileWatcherLinuxBased(folderpath, new List<string>() { "xls", "xlsx", "ics" });
-                        filewatcher.StartWatching();
+                            var filewatcher = new FOIFileWatcherLinuxBased(folderpath, new List<string>() { "xls", "xlsx", "ics" });
+                            filewatcher.StartWatching();
 
-                        folderWatchstatus.Add(folderpath, "Watching");
+                            folderWatchstatus.Add(folderpath, "Watching");
+                        }
+
                     }
-
+                }
+                catch(Exception ex)
+                {
+                    logger.LogError($" Error happened during FOI file catching {ex.Message} , stacktrace : {ex.StackTrace}");
                 }
 
                 await Task.Delay(5000, stoppingToken);

@@ -40,10 +40,9 @@ namespace MCS.FOI.FileConversion.FileWatcher
                                      | NotifyFilters.Security
                                      | NotifyFilters.Size;
 
-                //watcher.Changed += OnChanged;
+                
                 watcher.Created += OnCreated;
-                //watcher.Deleted += OnDeleted;
-                //watcher.Renamed += OnRenamed;
+                watcher.Error += OnError;
 
                 watcher.Filter = $"*.{fileType}";
                 watcher.IncludeSubdirectories = true;
@@ -52,14 +51,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
 
         }
 
-        private void OnChanged(object sender, FileSystemEventArgs e)
-        {
-            if (e.ChangeType != WatcherChangeTypes.Changed)
-            {
-                return;
-            }
-            Console.WriteLine($"Changed: {e.FullPath}");
-        }
+       
 
         private void OnCreated(object sender, FileSystemEventArgs e)
         {
@@ -132,16 +124,6 @@ namespace MCS.FOI.FileConversion.FileWatcher
             calendarFileProcessor.SourcePath = sourcePath;
             calendarFileProcessor.DestinationPath = getPdfOutputPath(calendarFileProcessor.SourcePath);
             calendarFileProcessor.ProcessCalendarFiles();
-        }
-
-        private void OnDeleted(object sender, FileSystemEventArgs e) =>
-            Console.WriteLine($"Deleted: {e.FullPath}");
-
-        private void OnRenamed(object sender, RenamedEventArgs e)
-        {
-            Console.WriteLine($"Renamed:");
-            Console.WriteLine($"    Old: {e.OldFullPath}");
-            Console.WriteLine($"    New: {e.FullPath}");
         }
 
         private void OnError(object sender, ErrorEventArgs e) =>

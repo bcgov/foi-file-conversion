@@ -10,10 +10,7 @@ namespace MCS.FOI.ExcelToPDF
     public class ExcelFileProcessor : IExcelFileProcessor
     {
 
-        public ExcelFileProcessor()
-        {
-
-        }
+        public ExcelFileProcessor() { }
 
         public ExcelFileProcessor(string sourceExcelFilePath, string outputPdfFilePath, string excelFileName)
         {
@@ -42,9 +39,7 @@ namespace MCS.FOI.ExcelToPDF
                     using (ExcelEngine excelEngine = new ExcelEngine())
                     {
                         IApplication application = excelEngine.Excel;
-
                        
-
                         for (int attempt = 1; attempt < 5; attempt++)
                         {
                             FileStream excelStream;
@@ -94,7 +89,7 @@ namespace MCS.FOI.ExcelToPDF
             catch (Exception ex)
             {
                 converted = false;
-                string error = $"Exception Occured while coverting file at {ExcelSourceFilePath} , exception :  {ex.Message} , stacktrace : {ex.StackTrace}";
+                string error = $"Exception occured while coverting file at {ExcelSourceFilePath} , exception :  {ex.Message} , stacktrace : {ex.StackTrace}";
                 Console.WriteLine(error);
             }
 
@@ -112,7 +107,6 @@ namespace MCS.FOI.ExcelToPDF
             pdfDocument.Compression = PdfCompressionLevel.BestSpeed;
             pdfDocument.Save(stream);
             stream.Dispose();
-
 
         }
 
