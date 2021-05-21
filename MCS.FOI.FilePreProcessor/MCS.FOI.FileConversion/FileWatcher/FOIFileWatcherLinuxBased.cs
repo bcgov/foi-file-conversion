@@ -160,7 +160,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
             bool isProcessed = false;
             string message = string.Empty;
             string outputPath = string.Empty;
-            string logFilePath = $"{fileInfo.FullName.Replace(fileInfo.Name, "")}/Log";
+            string logFilePath = $"{this.PathToWatch}/Log";
 
             watcherLogger.TryAdd(fileInfo.FullName, (fileInfo.CreationTimeUtc, "Created", null, message, outputPath));
             switch (fileInfo.Extension)
