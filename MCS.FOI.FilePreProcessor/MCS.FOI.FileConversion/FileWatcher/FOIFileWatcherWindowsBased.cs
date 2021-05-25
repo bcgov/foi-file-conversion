@@ -6,21 +6,23 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace MCS.FOI.FileConversion.FileWatcher
 {
-    public class FOIFileWatcher
+    /// <summary>
+    /// This class is for Filewatching a Shared Network Drive from Windows Client machine. This component utilize's .NET Core's FileSystemWatcher Object to monitor the
+    /// changes as per the provided path and fileextension and dependent on the DirectoryListing Class under FileWatcher.
+    /// </summary>
+    public class FOIFileWatcherWindowsBased
     {
-        ConcurrentDictionary<string, (DateTime, string, DateTime?, string, string)> watcherLogger;
+        ConcurrentDictionary<string, (DateTime, string, DateTime?, string, string)> watcherLogger;  // Thread Safe concurrent dictionary to monitor/watch event for logging
         FileSystemWatcher watcher;
-        private string PathToWatch { get; set; }
+        private string PathToWatch { get; set; } // Path to the FOI request Folder
 
-        private List<string> FileTypes { get; set; }
+        private List<string> FileTypes { get; set; } //FileTypes (.xls,.xlsx , .ics) to be watched
 
-        public FOIFileWatcher(string pathtowatch, List<string> fileTypes)
+        public FOIFileWatcherWindowsBased(string pathtowatch, List<string> fileTypes)
         {
             this.PathToWatch = pathtowatch;
             this.FileTypes = fileTypes;
@@ -28,6 +30,9 @@ namespace MCS.FOI.FileConversion.FileWatcher
             
         }
 
+        /// <summary>
+        /// Main Watcher method which is called from the entry point , based on the client deployment(Linux vs Windows) of the FileWatcher
+        /// </summary>
         public void StartWatching()
         {
            
@@ -55,7 +60,11 @@ namespace MCS.FOI.FileConversion.FileWatcher
         }
 
        
-
+        /// <summary>
+        /// File Created event handled from FileSystemWatcher to invoke FileConversion Logic inside corresponding FileConversion Libraries
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnCreated(object sender, FileSystemEventArgs e)
         {
             string extension = string.Empty;            
@@ -68,22 +77,26 @@ namespace MCS.FOI.FileConversion.FileWatcher
             bool isProcessed = false;
             string message = string.Empty;
             string outputPath = string.Empty;
+
+            // Async File Conversion component based on extension.
             Task.Run(() =>
             {
                 if (fileInfo != null)
                 {
                     watcherLogger.TryAdd(fileInfo.FullName,(fileInfo.CreationTimeUtc, "Created", null, message, outputPath));
                     extension = fileInfo.Extension;
+
+                    //Condition check for File Extension for triggering File Conversion logic
                     switch (extension)
                     {
                         case FileExtensions.xls:
                         case FileExtensions.xlsx:
                             watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "In Progress", null, message, outputPath);
-                            (isProcessed, message, outputPath) = ProcessExcelFiles(fileInfo);
+                            (isProcessed, message, outputPath) = ProcessExcelFiles(fileInfo); // Calling Excel Conversion Logic
                             break;
                         case FileExtensions.ics:
                             watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "In Progress", null, message, outputPath);
-                            (isProcessed, message, outputPath) = ProcessCalendarFiles(fileInfo);
+                            (isProcessed, message, outputPath) = ProcessCalendarFiles(fileInfo); // Calling ICalender Conversion Logic
                             break;
                         default:
                             break;
@@ -92,9 +105,8 @@ namespace MCS.FOI.FileConversion.FileWatcher
                         watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "Completed", DateTime.UtcNow, message, outputPath);
                     else
                         watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "Failed", DateTime.UtcNow, message, outputPath);
-
-                    //CSVLogger.UpdateRecords(logFilePath, watcherLogger);
-                    CSVLogger.LogtoCSV(watcherLogger, logFilePath);
+                    
+                    CSVLogger.LogtoCSV(watcherLogger, logFilePath); //Logging the events into FileLogger , under /logs folder on the FOI Request Folder
                 }
                 
             });
@@ -102,6 +114,12 @@ namespace MCS.FOI.FileConversion.FileWatcher
             
         }
 
+        /// <summary>
+        /// private method to pass the details(excel source path, desired output location, output format - single/multiple, attempts to overcome failures etc.) 
+        /// into ExcelFileProcessor Library types
+        /// </summary>
+        /// <param name="fileInfo"></param>
+        /// <returns></returns>
         private (bool, string, string) ProcessExcelFiles(FileInfo fileInfo)
         {
             string sourcePath = fileInfo.FullName.Replace(fileInfo.Name, "");
@@ -115,6 +133,12 @@ namespace MCS.FOI.FileConversion.FileWatcher
             return excelFileProcessor.ConvertToPDF();
         }
 
+        /// <summary>
+        /// private method to pass the details(calender source path, desired output location, output format - single/multiple, attempts to overcome failures etc.) 
+        /// into CalenderFileProcessor Library types 
+        /// </summary>
+        /// <param name="fileInfo"></param>
+        /// <returns></returns>
         private (bool, string, string) ProcessCalendarFiles(FileInfo fileInfo)
         {
             string sourcePath = fileInfo.FullName.Replace(fileInfo.Name, "");
@@ -144,6 +168,11 @@ namespace MCS.FOI.FileConversion.FileWatcher
             }
         }
 
+        /// <summary>
+        /// PDF output path creation method, based source location
+        /// </summary>
+        /// <param name="excelsourcePath"></param>
+        /// <returns></returns>
         private string getPdfOutputPath(string excelsourcePath)
         {
             if (!excelsourcePath.ToLower().Contains(@"\output\"))

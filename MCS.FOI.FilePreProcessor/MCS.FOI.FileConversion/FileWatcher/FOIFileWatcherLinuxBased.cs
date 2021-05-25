@@ -11,6 +11,10 @@ using System.IO;
 
 namespace MCS.FOI.FileConversion.FileWatcher
 {
+    /// <summary>
+    /// This class is for Filewatching a Shared Network Drive from Linux Client machine.This component utilize's .NET Core's PhysicalFileProvider Object to monitor the
+    /// changes as per the provided path and fileextension and dependent on the DirectoryListing Class under FileWatcher.
+    /// </summary>
     public class FOIFileWatcherLinuxBased
     {
         private IChangeToken _fileChangeToken;
@@ -28,6 +32,9 @@ namespace MCS.FOI.FileConversion.FileWatcher
             this.watcherLogger = new ConcurrentDictionary<string, (DateTime, string, DateTime?, string, string)>();
         }
 
+        /// <summary>
+        /// Main Watcher method which is called from the entry point , based on the client deployment(Linux vs Windows) of the FileWatcher
+        /// </summary>
         public void StartWatching()
         {
             foreach (string fileType in this.FileTypes)
@@ -120,19 +127,30 @@ namespace MCS.FOI.FileConversion.FileWatcher
             return calendarFileProcessor.ProcessCalendarFiles();
         }
 
-
+        /// <summary>
+        /// PhysicalFile Provider's File ChangeToken event handler to recognize XLS file type updates
+        /// </summary>
+        /// <param name="state"></param>
         private void XLSEvent(Object state)
         {
             Console.WriteLine("An XLS detected");
             StartWatchingByFileType(state.ToString());
         }
 
+        /// <summary>
+        /// PhysicalFile Provider's File ChangeToken event handler to recognize XLSX file type updates
+        /// </summary>
+        /// <param name="state"></param>
         private void XLSXEvent(Object state)
         {
             Console.WriteLine("An XLSX detected");
             StartWatchingByFileType(state.ToString());
         }
 
+        /// <summary>
+        /// PhysicalFile Provider's File ChangeToken event handler to recognize ICS(Calender) file type updates
+        /// </summary>
+        /// <param name="state"></param>
         private void ICSEvent(Object state)
         {
             Console.WriteLine("An ICS detected");
@@ -154,7 +172,10 @@ namespace MCS.FOI.FileConversion.FileWatcher
             }
         }
 
-
+        /// <summary>
+        /// File Processing generic main private method to invoke File Type specfic Conversion logic , based on File Extension
+        /// </summary>
+        /// <param name="fileInfo"></param>
         private void ProcessFile(FileInfo fileInfo)
         {
             bool isProcessed = false;
@@ -163,6 +184,8 @@ namespace MCS.FOI.FileConversion.FileWatcher
             string logFilePath = $"{this.PathToWatch}/Log";
 
             watcherLogger.TryAdd(fileInfo.FullName, (fileInfo.CreationTimeUtc, "Created", null, message, outputPath));
+
+            //Condition check for File Extension for triggering File Conversion logic
             switch (fileInfo.Extension)
             {
                 case FileExtensions.xls:
