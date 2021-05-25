@@ -6,6 +6,9 @@ using System.IO;
 
 namespace MCS.FOI.FileConversion.Logger
 {
+    /// <summary>
+    /// This class manages the logging of File convesion event to /LOGS folder based on the current time and status of conversion.
+    /// </summary>
     public static class CSVLogger
     {
 

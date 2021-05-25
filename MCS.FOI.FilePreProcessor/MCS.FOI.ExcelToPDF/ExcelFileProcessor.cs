@@ -7,11 +7,20 @@ using System.Threading;
 
 namespace MCS.FOI.ExcelToPDF
 {
+    /// <summary>
+    /// Excel File Processor to convert XLS, XLSX to PDF, based on the Synfusion Libraries.
+    /// </summary>
     public class ExcelFileProcessor : IExcelFileProcessor
     {
 
         public ExcelFileProcessor() { }
 
+        /// <summary>
+        /// Overloaded Constructor to recieve the Source Excel location and output location to save the PDF.
+        /// </summary>
+        /// <param name="sourceExcelFilePath"></param>
+        /// <param name="outputPdfFilePath"></param>
+        /// <param name="excelFileName"></param>
         public ExcelFileProcessor(string sourceExcelFilePath, string outputPdfFilePath, string excelFileName)
         {
             this.ExcelSourceFilePath = sourceExcelFilePath;
@@ -19,19 +28,40 @@ namespace MCS.FOI.ExcelToPDF
             this.ExcelFileName = excelFileName;
         }
 
+        /// <summary>
+        /// Source Excel Path, this will be full path including sub folders/ directories
+        /// </summary>
         public string ExcelSourceFilePath { get; set; }
 
+        /// <summary>
+        /// PDF output path with sub folder(s) path
+        /// </summary>
         public string PdfOutputFilePath { get; set; }
 
+        /// <summary>
+        /// Source File Name
+        /// </summary>
         public string ExcelFileName { get; set; }
 
+        /// <summary>
+        /// Flag to indicate to Syncfusion Xls to PDF Conversion, whether its a single page output for all spreadsheets
+        /// </summary>
         public bool IsSinglePDFOutput { get; set; }
 
+        /// <summary>
+        /// Counts / tries to file convert , if that file already under access or updates or copying is still in progress
+        /// </summary>
         public int FailureAttemptCount { get; set; }
 
+        /// <summary>
+        /// Wait in Milli seconds before trying next attempt
+        /// </summary>
         public int WaitTimeinMilliSeconds { get; set; }
 
-        private static object lockObject = new object();
+       /// <summary>
+       /// Main Conversion Method, including Sysnfusion components, Failure recovery attempts and PDF conversion
+       /// </summary>
+       /// <returns>return a tuple wwith file conversion status.</returns>
         public (bool, string, string) ConvertToPDF()
         {
             bool converted = false;
@@ -57,7 +87,7 @@ namespace MCS.FOI.ExcelToPDF
 
                                     if (workbook.Worksheets.Count > 0)
                                     {
-                                        if (!IsSinglePDFOutput)
+                                        if (!IsSinglePDFOutput) /// if not single output, then traverse through each sheet and make seperate o/p pdfs
                                         {
                                             foreach (IWorksheet worksheet in workbook.Worksheets)
                                             {
@@ -104,6 +134,10 @@ namespace MCS.FOI.ExcelToPDF
             return (converted, message, PdfOutputFilePath);
         }
 
+        /// <summary>
+        /// Save to pdf method, based on input from Excel file - Workbook vs Worksheet
+        /// </summary>
+        /// <param name="worksheet">worksheet object</param>
         private void saveToPdf(IWorksheet worksheet)
         {
             XlsIORenderer renderer = new XlsIORenderer();
@@ -118,6 +152,10 @@ namespace MCS.FOI.ExcelToPDF
 
         }
 
+        /// <summary>
+        ///  Save to pdf method, based on input from Excel file - Workbook vs Worksheet
+        /// </summary>
+        /// <param name="workbook">workbook object</param>
         private void saveToPdf(IWorkbook workbook)
         {
             XlsIORenderer renderer = new XlsIORenderer();

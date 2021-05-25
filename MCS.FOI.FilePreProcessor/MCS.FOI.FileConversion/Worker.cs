@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace MCS.FOI.FileConversion
 {
+    /// <summary>
+    /// This class is the Background Service / Worker running, which invokes the required type of FileWatcher based on the client/running platform (Linux vs Windows)
+    /// 
+    /// </summary>
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> logger;
@@ -17,7 +21,7 @@ namespace MCS.FOI.FileConversion
 
         public Worker(ILogger<Worker> _logger)
         {
-            logger = _logger;
+            logger = _logger; // Console Event Logger
 
         }
 
@@ -31,19 +35,24 @@ namespace MCS.FOI.FileConversion
                 try
                 {
                     
-                    var foldersListed = DirectoryListing.GetRequestFoldersToWatch($@"{ConversionSettings.BaseWatchPath}");
+                    //Fetching the list of FOI Request Folder path to monitor/ FileWatched
+                    // DirectoryListing logic is partially acheived based on a static, configurable logic. Once FOI requests are captured into DB, the directory listing
+                    //will connected to DB to get the list Folders to be watched.
+                    var foldersListed = DirectoryListing.GetRequestFoldersToWatch($@"{ConversionSettings.BaseWatchPath}"); 
 
                     foreach (string folderpath in foldersListed)
                     {
-                        if (!folderWatchstatus.ContainsKey(folderpath))
+                        if (!folderWatchstatus.ContainsKey(folderpath)) // Logic to understand whether its already under Filewatching.
                         {
-                            if (ConversionSettings.DeploymentPlatform == Platform.Windows)
+                            if (ConversionSettings.DeploymentPlatform == Platform.Windows) // Check for deployment platform for invoking specific type of FileWatcher logic.
                             {
-                                var filewatcher = new FOIFileWatcher(folderpath, new List<string>() { "xls", "xlsx", "ics" });
+                                //Invoking Windows based File Watcher
+                                var filewatcher = new FOIFileWatcherWindowsBased(folderpath, new List<string>() { "xls", "xlsx", "ics" });
                                 filewatcher.StartWatching();
                             }
                             else
                             {
+                                //Invoking Linux based File Watcher
                                 var filewatcher = new FOIFileWatcherLinuxBased(folderpath, new List<string>() { "xls", "xlsx", "ics" });
                                 filewatcher.StartWatching();
                             }
@@ -58,7 +67,8 @@ namespace MCS.FOI.FileConversion
                     logger.LogError($" Error happened during FOI file catching {ex.Message} , stacktrace : {ex.StackTrace}");
                 }
 
-                await Task.Delay(5000, stoppingToken);
+                //Delaying for next watch, this is as per config from ENV VAR
+                await Task.Delay(ConversionSettings.FileWatcherMonitoringDelayInMilliSeconds, stoppingToken);
             }
         }
     }
