@@ -4,29 +4,51 @@ using Syncfusion.Pdf;
 using System;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace MCS.FOI.CalenderToPDF
 {
+    /// <summary>
+    /// Calendar files (.ics) are processed and converted to pdf using syncfusion libraries
+    /// </summary>
     public class CalendarFileProcessor : ICalendarFileProcessor
     {
 
+        /// <summary>
+        /// Source iCalendar Path, this will be full path including sub folders/ directories
+        /// </summary>
         public string SourcePath { get; set; }
 
+        /// <summary>
+        /// PDF output path with sub folder(s) path
+        /// </summary>
         public string DestinationPath { get; set; }
 
+        /// <summary>
+        /// Wait in Milli seconds before trying next attempt
+        /// </summary>
         public int FailureAttemptCount { get; set; }
 
+        /// <summary>
+        /// Wait in Milli seconds before trying next attempt
+        /// </summary>
         public int WaitTimeinMilliSeconds { get; set; }
 
+        /// <summary>
+        /// Source file name with extension
+        /// </summary>
         public string FileName { get; set; }
 
 
+        /// <summary>
+        /// Deployment platform - Linux/Windows
+        /// </summary>
         public Platform DeploymentPlatform { get; set; }
 
 
-
+        /// <summary>
+        /// Success/Failure message
+        /// </summary>
         public string Message { get; set; }
         public CalendarFileProcessor()
         {
@@ -56,6 +78,11 @@ namespace MCS.FOI.CalenderToPDF
             }
             return (isProcessed, Message, DestinationPath);
         }
+
+        /// <summary>
+        /// Converts iCalendar to HTML
+        /// </summary>
+        /// <returns>HTML as a string</returns>
         private string ConvertCalendartoHTML()
         {
            
@@ -196,6 +223,11 @@ namespace MCS.FOI.CalenderToPDF
             
         }
 
+        /// <summary>
+        /// Converts HTML string to PDF using syncfution library and webkit
+        /// </summary>
+        /// <param name="strHTML">HTML string</param>
+        /// <returns>true - if converted successfully, else false</returns>
         private bool ConvertHTMLtoPDF(string strHTML)
         {
             bool isConverted;
@@ -207,11 +239,7 @@ namespace MCS.FOI.CalenderToPDF
 
                 WebKitConverterSettings webKitConverterSettings = new WebKitConverterSettings() { EnableHyperLink = true };
 
-                //TODO: The path needs to be replaced with @"/QtBinariesLinux"; when containerizing the code
-                //string path = @"" + Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName + "\\QtBinariesWindows";
-                //string path = @"" + Environment.CurrentDirectory + "\\QtBinariesWindows";
-                //webKitConverterSettings.WebKitPath = path; // $@"/QtBinariesLinux";
-
+                //Point to the webkit based on the platform the application is running
                 if (DeploymentPlatform == Platform.Linux)
                 {
                     webKitConverterSettings.WebKitPath = $@"/app/QtBinariesLinux";
@@ -256,7 +284,9 @@ namespace MCS.FOI.CalenderToPDF
             }
             return isConverted;
         }
-
+        /// <summary>
+        /// Creates the output folder with sub folders if any
+        /// </summary>
         private void CreateOutputFolder()
         {
             if (!Directory.Exists(DestinationPath))
