@@ -2,15 +2,30 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MCS.FOI.ExcelToPDF;
 using System.IO;
+using System;
 
 namespace MCS.FOI.ExcelToPDFUnitTests
 {
     [TestClass]
     public class ExcelToPDFTests
     {
+        public ExcelToPDFTests()
+        {
+            checkSourceRootPathENVVAR();
+        }
 
-
-
+        private void checkSourceRootPathENVVAR()
+        {
+            //#if DEBUG
+            //    Environment.SetEnvironmentVariable("SourceRootPath","");//Enter local path, if required on debug execution.
+            //#endif
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SourceRootPath")))
+            {
+                var errorENV = "SourceRootPath ENV VAR missing!";
+                Console.WriteLine(errorENV);
+                Assert.Fail(errorENV);
+            }
+        }
         [TestMethod]
         public void XLSConvertToPDFTest()
         {
@@ -122,10 +137,7 @@ namespace MCS.FOI.ExcelToPDFUnitTests
 
         private string getExcelRootFolder()
         {
-            string unittestexecutionDirectory = Directory.GetCurrentDirectory();
-            string approot = unittestexecutionDirectory.Replace(@"\bin\Debug\netcoreapp3.1", "");
-            return Path.Combine(approot, "SourceExcel");
-
+            return Environment.GetEnvironmentVariable("SourceRootPath");
         }
     }
 }
