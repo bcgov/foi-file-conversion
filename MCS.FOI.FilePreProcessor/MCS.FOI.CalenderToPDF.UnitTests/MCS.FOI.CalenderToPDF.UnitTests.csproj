@@ -23,4 +23,8 @@
     <ProjectReference Include="..\MCS.FOI.CalenderToPDF\MCS.FOI.CalenderToPDF.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
 </Project>

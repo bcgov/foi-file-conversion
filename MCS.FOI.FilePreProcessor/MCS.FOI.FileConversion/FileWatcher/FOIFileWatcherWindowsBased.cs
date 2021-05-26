@@ -149,6 +149,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
             calendarFileProcessor.WaitTimeinMilliSeconds = ConversionSettings.WaitTimeInMilliSeconds;
             calendarFileProcessor.FailureAttemptCount = ConversionSettings.FailureAttemptCount;
             calendarFileProcessor.DeploymentPlatform = CalenderToPDF.Platform.Windows;
+            calendarFileProcessor.HTMLtoPdfWebkitPath = ConversionSettings.HTMLtoPdfWebkitPath;
             return calendarFileProcessor.ProcessCalendarFiles();
         }
 
