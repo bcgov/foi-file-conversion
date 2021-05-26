@@ -1,4 +1,4 @@
-# FOI File Conversion
+﻿# FOI File Conversion
 
 ## Introduction
 FOI-File-Conversion is a backend process to convert Excel (.xls, .xlsx) and iCalendar(.ics) files to pdf so that it can be loaded to Intella for deduplication and export to pdf. Current Intella software is having issue while converting these problematic file type to pdf for further processing in AXIS. This is has been tackled using this FOI-File-Conversion background process.
@@ -11,26 +11,37 @@ Note : As part of the development of FOI File conversion component, a third part
 
 ![Here is the File Watcher and Conversion Flow Diagram](FileProcessor.PNG)
 
-# Architecture
+#System Requirements
 
-Bring the architecture diagram here
+* .NET Core 3.1
+* Syncfusion 19.1.0.63
 
+#Code Repo/Solution structure
 
-# Execution & Deployments
+├── LICENSE
+├── README.md
+├── MCS.FOI.FilePreProcessor
+       ├── MCS.FOI.CalenderToPDF
+                ├──CalendarFileProcessor.cs
 
-Details on deployment and code run
-## Prerequisites and System Requirements for Local execution
-
-## Local deployment steps
-
-# Code Repo/Solution structure
-
-# Additional Information
-
-Regarding Suncfusion licensing and unit test
-## License
-Syncfusion license details
+       ├── MCS.FOI.ExcelToPDF
+                ├──ExcelFileProcessor.cs
+       ├── MCS.FOI.FileConversion
+                ├──FileWatcher
+                    ....
+                ├──Logger
+                ├──Utilities
+                ...
+       ├── MCS.FOI.CalenderToPDF.UnitTests
+                ├──CalendarFileProcessorTest.cs
+       ├── MCS.FOI.ExcelToPDF.UnitTests
+                ├──ExcelToPDFTests.cs
+      
+# License
+This code base uses a third party paid-product called "File Formats" from Syncfusion. The current libraries referred uses a trial version from Syncfusion, which is NOT intended for production use. Please refer to [Syncfusion License agreement](https://www.syncfusion.com/license/studio/19.1.0.63/syncfusion_essential_studio_eula.pdf)
 ## Unit test
 
-Unit test details
+## Unit test details
+
+There are two seperate unit test case projects for Excel and Calender file conversions. Refer the MCS.FOI.FilePreProcessor/unittest.bat
 
