@@ -29,6 +29,7 @@ namespace MCS.FOI.ExcelToPDFUnitTests
         [TestMethod]
         public void XLSConvertToPDFTest()
         {
+            checkSourceRootPathENVVAR();
             bool isconverted;
             string message = string.Empty;
             ExcelFileProcessor excelFileProcessor = new ExcelFileProcessor();
@@ -52,6 +53,7 @@ namespace MCS.FOI.ExcelToPDFUnitTests
         [TestMethod]
         public void XLSXConvertToPDFTest()
         {
+            checkSourceRootPathENVVAR();
             bool isconverted, isconverted1;
             string message = string.Empty;
             ExcelFileProcessor excelFileProcessor = new ExcelFileProcessor();
@@ -91,6 +93,7 @@ namespace MCS.FOI.ExcelToPDFUnitTests
         [TestMethod]
         public void ProblematicXLSX1ConvertToPDFTest()
         {
+            checkSourceRootPathENVVAR();
             bool isconverted;
             string message = string.Empty;
             ExcelFileProcessor excelFileProcessor = new ExcelFileProcessor();
@@ -115,6 +118,7 @@ namespace MCS.FOI.ExcelToPDFUnitTests
         [TestMethod]
         public void FolderLevelSetupExcelToPdfTest()
         {
+            checkSourceRootPathENVVAR();
             bool isconverted;
             string message = string.Empty;
             string rootLocation = getExcelRootFolder();
