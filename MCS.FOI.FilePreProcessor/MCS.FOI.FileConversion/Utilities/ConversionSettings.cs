@@ -25,6 +25,8 @@ namespace MCS.FOI.FileConversion.Utilities
 
         public static string SyncfusionLicense { get; set; }
 
+        public static string HTMLtoPdfWebkitPath { get; set; }
+
     }
 
     public enum Platform

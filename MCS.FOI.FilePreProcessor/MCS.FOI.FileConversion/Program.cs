@@ -14,9 +14,10 @@ namespace MCS.FOI.FileConversion
         public static void Main(string[] args)
         {
             // Getting the environment variable to understand execution enviroment with OS platform. For e.g. : Windows Development, Linux Test, Linux Production etc.
-            var environmentName = Environment.GetEnvironmentVariable("EXEC_ENV"); 
+            var environmentName = Environment.GetEnvironmentVariable("EXEC_ENV");
+            var htmltoPdfWebkitPath = Environment.GetEnvironmentVariable("HTMLtoPdfWebkitPath");
 
-            if (!string.IsNullOrEmpty(environmentName))
+            if (!string.IsNullOrEmpty(environmentName) && !string.IsNullOrEmpty(htmltoPdfWebkitPath))
             {
                 
                 // based on the environment + OS platform , settings file is loaded into the memory to parse the settings/configurations to a strongly typed object.
@@ -30,6 +31,7 @@ namespace MCS.FOI.FileConversion
                 ConversionSettings.BaseWatchPath = configurationbuilder.GetSection("ConversionSettings:BaseWatchPath").Value;
                 ConversionSettings.FolderSearchPattern = configurationbuilder.GetSection("ConversionSettings:FolderSearchPattern").Value;
                 ConversionSettings.SyncfusionLicense = configurationbuilder.GetSection("ConversionSettings:SyncfusionLicense").Value;
+                ConversionSettings.HTMLtoPdfWebkitPath = htmltoPdfWebkitPath;
 
                 int.TryParse(configurationbuilder.GetSection("ConversionSettings:FailureAttemptCount").Value, out int faitureattempt);
 
@@ -53,7 +55,7 @@ namespace MCS.FOI.FileConversion
             }
             else
             {
-                Console.WriteLine($"Missing Environment Variable 'EXEC_ENV', application requires this ENV VAR to starts with ");
+                Console.WriteLine($"Missing Environment Variable(s) 'EXEC_ENV' or/both 'HTMLtoPdfWebkitPath', application requires these ENV VAR to starts with ");
             }
 
 

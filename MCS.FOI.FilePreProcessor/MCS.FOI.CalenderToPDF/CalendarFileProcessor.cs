@@ -45,6 +45,10 @@ namespace MCS.FOI.CalenderToPDF
         /// </summary>
         public Platform DeploymentPlatform { get; set; }
 
+        /// <summary>
+        /// Syncfusion binary path for qt webkit. Required for conversion from HTML to PDF
+        /// </summary>
+        public string HTMLtoPdfWebkitPath { get; set; }
 
         /// <summary>
         /// Success/Failure message
@@ -240,15 +244,8 @@ namespace MCS.FOI.CalenderToPDF
                 WebKitConverterSettings webKitConverterSettings = new WebKitConverterSettings() { EnableHyperLink = true };
 
                 //Point to the webkit based on the platform the application is running
-                if (DeploymentPlatform == Platform.Linux)
-                {
-                    webKitConverterSettings.WebKitPath = $@"/app/QtBinariesLinux";
-                }
-                else
-                {
-                    string path = @"" + Environment.CurrentDirectory + "\\QtBinariesWindows";
-                    webKitConverterSettings.WebKitPath = path; 
-                }
+                 webKitConverterSettings.WebKitPath = HTMLtoPdfWebkitPath;
+               
 
                 //Assign WebKit converter settings to HTML converter
                 htmlConverter.ConverterSettings = webKitConverterSettings;
