@@ -5,6 +5,8 @@ FOI-File-Conversion is a backend process to convert Excel (.xls, .xlsx) and iCal
 
 This process include a File watcher, a processor for excel files and a processor for iCalendar files. File watcher will keep on watching the Shared LAN for problematic file types and the respective processor pick up the files based on the file type and convert to pdfs.
 
+Note : As part of the development of FOI File conversion component, a third party tool/SDK called "File Formats" from Syncfusion has been utilized. This tool comes up with a paid license which need to be procured seperately in order to further utilize this code base with other projects.
+
 # File Watcher  and Conversion Flow
 
 Work Flow from Miro
