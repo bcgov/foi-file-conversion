@@ -10,18 +10,31 @@ namespace MCS.FOI.CalenderToPDF.UnitTests
         public CalendarFileProcessorTest()
         {            
             checkWebkitENVVAR();
+            checkSourceRootPathENVVAR();
         }
 
         private void checkWebkitENVVAR()
         {
 
-            #if DEBUG
-                Environment.SetEnvironmentVariable("HTMLtoPdfWebkitPath","");//Enter local path, if required on debug execution.
-            #endif
+            //#if DEBUG
+            //    Environment.SetEnvironmentVariable("HTMLtoPdfWebkitPath","");//Enter local path, if required on debug execution.
+            //#endif
 
             if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HTMLtoPdfWebkitPath")))
             {
                 var errorENV = "HTMLtoPdfWebkitPath ENV VAR missing!";
+                Console.WriteLine(errorENV);
+                Assert.Fail(errorENV);
+            }
+        }
+        private void checkSourceRootPathENVVAR()
+        {
+            //#if DEBUG
+            //    Environment.SetEnvironmentVariable("SourceRootPath","");//Enter local path, if required on debug execution.
+            //#endif
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SourceRootPath")))
+            {
+                var errorENV = "SourceRootPath ENV VAR missing!";
                 Console.WriteLine(errorENV);
                 Assert.Fail(errorENV);
             }
@@ -32,6 +45,7 @@ namespace MCS.FOI.CalenderToPDF.UnitTests
         {
 
             checkWebkitENVVAR();
+            checkSourceRootPathENVVAR();
 
             bool isProcessed;
             string message = string.Empty;
@@ -55,6 +69,7 @@ namespace MCS.FOI.CalenderToPDF.UnitTests
         public void ProcessCalendarFileWithAttachmentsTest()
         {
             checkWebkitENVVAR();
+            checkSourceRootPathENVVAR();
 
             bool isProcessed;
             string message = string.Empty;
@@ -78,6 +93,7 @@ namespace MCS.FOI.CalenderToPDF.UnitTests
         public void ProcessFolderLevelCalendarFileTest()
         {
             checkWebkitENVVAR();
+            checkSourceRootPathENVVAR();
 
             bool isProcessed;
             string message = string.Empty;
@@ -101,6 +117,7 @@ namespace MCS.FOI.CalenderToPDF.UnitTests
         public void ProcessComplexCalendarFilesTest()
         {
             checkWebkitENVVAR();
+            checkSourceRootPathENVVAR();
             bool isProcessed;
             string message = string.Empty;
             string rootFolder = getSourceFolder();
@@ -121,13 +138,7 @@ namespace MCS.FOI.CalenderToPDF.UnitTests
         }
         private string getSourceFolder()
         {
-            #if DEBUG
-                string currentDirectory = Directory.GetCurrentDirectory();
-                string approot = currentDirectory.Replace(@"\bin\Debug\netcoreapp3.1", "");
-            #endif
-
-            return Path.Combine(approot, @"SharedLAN\Req1");
-
+            return Environment.GetEnvironmentVariable("SourceRootPath");
         }
     }
 }
