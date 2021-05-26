@@ -9,7 +9,7 @@ Note : As part of the development of FOI File conversion component, a third part
 
 # File Watcher and Conversion Flow
 
-[Here is the File Watcher and Conversion Flow Diagram](https://github.com/bcgov/foi-file-conversion/blob/dev-DV/FileProcessor.PNG)
+![Here is the File Watcher and Conversion Flow Diagram](FileProcessor.PNG)
 
 # Architecture
 
