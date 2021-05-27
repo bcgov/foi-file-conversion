@@ -11,19 +11,17 @@ Note : As part of the development of FOI File conversion component, a third part
 
 ![Here is the File Watcher and Conversion Flow Diagram](FileProcessor.PNG)
 
-#System Requirements
+# System Requirements
 
 * .NET Core 3.1
-* Syncfusion 19.1.0.63
 
-#Code Repo/Solution structure
-
-├── LICENSE
-├── README.md
-├── MCS.FOI.FilePreProcessor
-       ├── MCS.FOI.CalenderToPDF
+# Code Repo/Solution structure
+```
+├──LICENSE
+├──README.md
+├──MCS.FOI.FilePreProcessor
+       ├──MCS.FOI.CalenderToPDF
                 ├──CalendarFileProcessor.cs
-
        ├── MCS.FOI.ExcelToPDF
                 ├──ExcelFileProcessor.cs
        ├── MCS.FOI.FileConversion
@@ -36,12 +34,10 @@ Note : As part of the development of FOI File conversion component, a third part
                 ├──CalendarFileProcessorTest.cs
        ├── MCS.FOI.ExcelToPDF.UnitTests
                 ├──ExcelToPDFTests.cs
-      
+ ```
 # License
 This code base uses a third party paid-product called "File Formats" from Syncfusion. The current libraries referred uses a trial version from Syncfusion, which is NOT intended for production use. Please refer to [Syncfusion License agreement](https://www.syncfusion.com/license/studio/19.1.0.63/syncfusion_essential_studio_eula.pdf)
-## Unit test
+# Unit test
 
-## Unit test details
-
-There are two seperate unit test case projects for Excel and Calender file conversions. Refer the MCS.FOI.FilePreProcessor/unittest.bat
+There are two seperate unit test case projects for Excel and Calender file conversions. Refer the MCS.FOI.FilePreProcessor/unittest.bat . These unit tests requires 2 environment variables for the execution "HTMLtoPdfWebkitPath" (path to the webkit folder - included in the code base) and "SourceRootPath", which is the path the sample conversion files inside the unit tests
 
