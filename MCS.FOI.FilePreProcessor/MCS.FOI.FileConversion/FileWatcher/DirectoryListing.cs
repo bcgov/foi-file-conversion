@@ -17,8 +17,12 @@ namespace MCS.FOI.FileConversion.FileWatcher
     {
         public static List<string> GetRequestFoldersToWatch(string baseSharedPath)
         {
+            DateTime startDatetime = DateTime.MinValue; //default DateTime to starts with.
+
+            DateTime.TryParse(ConversionSettings.FileWatcherStartDate, out startDatetime);
+
             List<string> watchFolders = Directory.GetDirectories(baseSharedPath, ConversionSettings.FolderSearchPattern, SearchOption.TopDirectoryOnly)
-                .Where(f => new DirectoryInfo(f).CreationTimeUtc > DateTime.Now.AddDays(ConversionSettings.DayCountBehindToStart > 0 ? ConversionSettings.DayCountBehindToStart * -1 : -1)).ToList<string>();
+                .Where(f => new DirectoryInfo(f).CreationTimeUtc > startDatetime).ToList<string>();
             return watchFolders;
         }
     }

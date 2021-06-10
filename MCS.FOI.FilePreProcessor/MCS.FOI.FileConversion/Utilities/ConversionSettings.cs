@@ -27,6 +27,8 @@ namespace MCS.FOI.FileConversion.Utilities
 
         public static string HTMLtoPdfWebkitPath { get; set; }
 
+        public static string FileWatcherStartDate { get; set; }
+
     }
 
     public enum Platform
