@@ -2,7 +2,10 @@ using MCS.FOI.FileConversion.Utilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+using Serilog.Events;
 using System;
+using ILogger = Serilog.ILogger;
 
 namespace MCS.FOI.FileConversion
 {
@@ -11,31 +14,36 @@ namespace MCS.FOI.FileConversion
     /// </summary>
     public class Program
     {
+        
         public static void Main(string[] args)
         {
-            // Getting the environment variable to understand execution enviroment with OS platform. For e.g. : Windows Development, Linux Test, Linux Production etc.
-            var environmentName = Environment.GetEnvironmentVariable("EXEC_ENV");
-            var htmltoPdfWebkitPath = Environment.GetEnvironmentVariable("HTMLtoPdfWebkitPath");
 
-            if (!string.IsNullOrEmpty(environmentName) && !string.IsNullOrEmpty(htmltoPdfWebkitPath))
+            try
             {
-                
+
+                Log.Information("MCS FOI FileConversion Service is up");
+
                 // based on the environment + OS platform , settings file is loaded into the memory to parse the settings/configurations to a strongly typed object.
                 var configurationbuilder = new ConfigurationBuilder()
                         .AddJsonFile($"appsettings.json", true, true)
-                        .AddJsonFile($"appsettings.{environmentName}.json", true, true)
+                        //.AddJsonFile($"appsettings.{environmentName}.json", true, true) // TEMP: Commented out, will track back when we migrate to Cloud/OS in future
                         .AddEnvironmentVariables().Build();
 
-                // Fetching Configuration values from setting file {appsetting.{environment_platform}.json}
-                ConversionSettings.DeploymentPlatform = environmentName.ToLower().StartsWith("linux") ? Platform.Linux : Platform.Windows;
+                Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configurationbuilder)                
+                .CreateLogger();
+
+                // Fetching Configuration values from setting file { appsetting.{ environment_platform}.json}
+                //ConversionSettings.DeploymentPlatform = environmentName.ToLower().StartsWith("linux") ? Platform.Linux : Platform.Windows;
+                ConversionSettings.DeploymentPlatform = Platform.Windows; //Fixing to Windows platform for Win Server VM deployment, once with Linux/OS , will take environment
                 ConversionSettings.BaseWatchPath = configurationbuilder.GetSection("ConversionSettings:BaseWatchPath").Value;
                 ConversionSettings.FolderSearchPattern = configurationbuilder.GetSection("ConversionSettings:FolderSearchPattern").Value;
                 ConversionSettings.SyncfusionLicense = configurationbuilder.GetSection("ConversionSettings:SyncfusionLicense").Value;
-                ConversionSettings.HTMLtoPdfWebkitPath = htmltoPdfWebkitPath;
+                ConversionSettings.HTMLtoPdfWebkitPath = configurationbuilder.GetSection("ConversionSettings:HTMLtoPdfWebkitPath").Value;
 
-                int.TryParse(configurationbuilder.GetSection("ConversionSettings:FailureAttemptCount").Value, out int faitureattempt);
+                int.TryParse(configurationbuilder.GetSection("ConversionSettings:FailureAttemptCount").Value, out int failureattempt);
 
-                ConversionSettings.FailureAttemptCount = faitureattempt;// Max. recovery attempts after a failure.
+                ConversionSettings.FailureAttemptCount = failureattempt;// Max. recovery attempts after a failure.
 
                 int.TryParse(configurationbuilder.GetSection("ConversionSettings:WaitTimeInMilliSeconds").Value, out int waittimemilliseconds);
                 ConversionSettings.WaitTimeInMilliSeconds = waittimemilliseconds; // Wait time between recovery attempts after a failure
@@ -46,30 +54,32 @@ namespace MCS.FOI.FileConversion
                 int.TryParse(configurationbuilder.GetSection("ConversionSettings:DayCountBehindToStart").Value, out int count);
                 ConversionSettings.DayCountBehindToStart = count; // days behind to start from for File watching, this is for DirectoryList Object to set up static algo for FileWacthing, till DB integration.
 
-                // Fetching Syncfusion License from settings
+                //Fetching Syncfusion License from settings
                 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(ConversionSettings.SyncfusionLicense);
 
                 CreateHostBuilder(args).Build().Run();
 
 
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine($"Missing Environment Variable(s) 'EXEC_ENV' or/both 'HTMLtoPdfWebkitPath', application requires these ENV VAR to starts with ");
+                Log.Information($" Error happpened while running the FOI File Conversion service. Exception message : {ex.Message} , StackTrace :{ex.StackTrace}");
             }
-
-
-            Console.WriteLine("Press enter to exit.");
-            Console.ReadLine();
+            finally
+            {
+                Console.WriteLine("Press enter to exit.");
+                Console.ReadLine();
+            }
 
         }
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+             
                 .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddHostedService<Worker>(); // Dependency Injection of  Worker / BG Service
+                {                    
+                    services.AddHostedService<Worker>(); // Dependency Injection of  Worker / BG Service               
+                })
+            .UseWindowsService(); // Marking as Windows Service to silently execute the process.
 
-
-                });
     }
 }

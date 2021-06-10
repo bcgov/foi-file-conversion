@@ -2,11 +2,14 @@
 using MCS.FOI.ExcelToPDF;
 using MCS.FOI.FileConversion.Logger;
 using MCS.FOI.FileConversion.Utilities;
+using Serilog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+
+
 
 namespace MCS.FOI.FileConversion.FileWatcher
 {
@@ -35,7 +38,9 @@ namespace MCS.FOI.FileConversion.FileWatcher
         /// </summary>
         public void StartWatching()
         {
-           
+
+            Log.Information($"Started Watching new Folder Path! {this.PathToWatch}");
+            
             foreach (string fileType in FileTypes)
             {
                 watcher = new FileSystemWatcher(this.PathToWatch);
@@ -71,6 +76,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
             string value = $"Created: {e.FullPath}";
             Console.WriteLine(value);
             Console.WriteLine($"Path to watch is {this.PathToWatch}");
+            Log.Information($"Created File Event for file Path! {e.FullPath}");
             string logFilePath = $"{e.FullPath.Replace(e.Name, "")}\\Log";
             FileInfo fileInfo = new FileInfo(e.FullPath);
             
@@ -161,6 +167,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
         {
             if (ex != null)
             {
+                Log.Error($"Error happened during file watching evening {ex.Message}, {ex.StackTrace}");
                 Console.WriteLine($"Message: {ex.Message}");
                 Console.WriteLine("Stacktrace:");
                 Console.WriteLine(ex.StackTrace);

@@ -2,6 +2,7 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ActiveDebugProfile>MCS.FOI.FileConversion</ActiveDebugProfile>
+    <_LastSelectedProfileId>C:\AOT\FOI\Source\foi-file-conversion\MCS.FOI.FilePreProcessor\MCS.FOI.FileConversion\Properties\PublishProfiles\FolderProfile.pubxml</_LastSelectedProfileId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>

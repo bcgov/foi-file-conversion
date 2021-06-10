@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using ILogger = Serilog.ILogger;
 
 namespace MCS.FOI.FileConversion
 {

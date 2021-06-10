@@ -4,6 +4,7 @@ using Syncfusion.XlsIORenderer;
 using System;
 using System.IO;
 using System.Threading;
+using Serilog;
 
 namespace MCS.FOI.ExcelToPDF
 {
@@ -110,6 +111,7 @@ namespace MCS.FOI.ExcelToPDF
                             catch(Exception e)
                             {
                                 message = $"Exception happened while accessing File {sourceFile}, re-attempting count : {attempt}";
+                                Log.Error(message);
                                 Console.WriteLine(message);
                                 excelStream = null;
 
@@ -121,6 +123,7 @@ namespace MCS.FOI.ExcelToPDF
                 else
                 {
                     message = $"{sourceFile} does not exist!";
+                    Log.Error(message);
                     //return converted;
                 }
             }
@@ -128,6 +131,7 @@ namespace MCS.FOI.ExcelToPDF
             {
                 converted = false;
                 string error = $"Exception occured while coverting file at {ExcelSourceFilePath} , exception :  {ex.Message} , stacktrace : {ex.StackTrace}";
+                Log.Error(error);
                 Console.WriteLine(error);
             }
 
