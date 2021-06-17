@@ -98,7 +98,7 @@ namespace MCS.FOI.CalenderToPDF
                 {
                     for (int attempt = 1; attempt < FailureAttemptCount; attempt++)
                     {
-                        Thread.Sleep(WaitTimeinMilliSeconds);
+                        
                         try
                         {
                             using (FileStream fileStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read))
@@ -112,7 +112,8 @@ namespace MCS.FOI.CalenderToPDF
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine($"Exception happened while accessing File {sourceFile}, re-attempting count : {attempt}");                                                   
+                            Console.WriteLine($"Exception happened while accessing File {sourceFile}, re-attempting count : {attempt}");
+                            Thread.Sleep(WaitTimeinMilliSeconds);
                         }
                     }
                    

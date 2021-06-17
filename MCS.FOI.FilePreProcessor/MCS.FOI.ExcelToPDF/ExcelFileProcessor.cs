@@ -79,13 +79,13 @@ namespace MCS.FOI.ExcelToPDF
                         for (int attempt = 1; attempt < FailureAttemptCount; attempt++)
                         {
                             FileStream excelStream;
-                            Thread.Sleep(WaitTimeinMilliSeconds);
+                            
                             try
                             {
                                 using (excelStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read))
                                 {
-                                    IWorkbook workbook = application.Workbooks.Open(excelStream, ExcelParseOptions.DoNotParsePivotTable);
-
+                                    IWorkbook workbook = application.Workbooks.Open(excelStream,ExcelParseOptions.ParseWorksheetsOnDemand);
+                                  
                                     if (workbook.Worksheets.Count > 0)
                                     {
                                         if (!IsSinglePDFOutput) /// if not single output, then traverse through each sheet and make seperate o/p pdfs
@@ -93,7 +93,10 @@ namespace MCS.FOI.ExcelToPDF
                                             foreach (IWorksheet worksheet in workbook.Worksheets)
                                             {
                                                 if (worksheet.Visibility == WorksheetVisibility.Visible)
+                                                {                                                   
+                                                    worksheet.UsedRange.AutofitRows();
                                                     saveToPdf(worksheet);
+                                                }
                                             }
                                         }
                                         else
@@ -114,7 +117,7 @@ namespace MCS.FOI.ExcelToPDF
                                 Log.Error(message);
                                 Console.WriteLine(message);
                                 excelStream = null;
-
+                                Thread.Sleep(WaitTimeinMilliSeconds);
                             }
                         }
 
@@ -149,8 +152,8 @@ namespace MCS.FOI.ExcelToPDF
                 Directory.CreateDirectory(PdfOutputFilePath);
             string outputFileName = Path.Combine(PdfOutputFilePath, $"{Path.GetFileNameWithoutExtension(ExcelFileName)}_{worksheet.Name}");
             using var pdfDocument = renderer.ConvertToPDF(worksheet, new XlsIORendererSettings() { LayoutOptions = LayoutOptions.FitAllColumnsOnOnePage });
-            using var stream = new FileStream($"{outputFileName}.pdf", FileMode.Create, FileAccess.ReadWrite);
-            pdfDocument.Compression = PdfCompressionLevel.BestSpeed;
+            using var stream = new FileStream($"{outputFileName}.pdf", FileMode.Create, FileAccess.Write);
+            pdfDocument.Compression = PdfCompressionLevel.Normal;
             pdfDocument.Save(stream);
             stream.Dispose();
 

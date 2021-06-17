@@ -115,7 +115,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
                     CSVLogger.LogtoCSV(watcherLogger, logFilePath); //Logging the events into FileLogger , under /logs folder on the FOI Request Folder
                 }
                 
-            });
+            }).ConfigureAwait(false);
 
             
         }

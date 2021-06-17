@@ -59,6 +59,11 @@ namespace MCS.FOI.FileConversion
                             }
 
                             folderWatchstatus.Add(folderpath, "Watching");
+                            logger.LogInformation($"Newly watching this path, {folderpath}");
+                        }
+                        else
+                        {
+                            logger.LogInformation($"Already watching this path, {folderpath}");
                         }
 
                     }

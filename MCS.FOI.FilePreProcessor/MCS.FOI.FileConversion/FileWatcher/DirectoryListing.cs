@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using Serilog;
+
 
 namespace MCS.FOI.FileConversion.FileWatcher
 {
@@ -21,8 +23,31 @@ namespace MCS.FOI.FileConversion.FileWatcher
 
             DateTime.TryParse(ConversionSettings.FileWatcherStartDate, out startDatetime);
 
-            List<string> watchFolders = Directory.GetDirectories(baseSharedPath, ConversionSettings.FolderSearchPattern, SearchOption.TopDirectoryOnly)
-                .Where(f => new DirectoryInfo(f).CreationTimeUtc > startDatetime).ToList<string>();
+            List<string> watchFolders = new List<string>();
+
+            foreach (string subministrypath in ConversionSettings.MinistryIncomingPaths)
+            {
+                if (Directory.Exists(String.Concat(baseSharedPath, subministrypath)))
+                {
+                    List<string> _subwatchFolder = Directory.GetDirectories(String.Concat(baseSharedPath, subministrypath), ConversionSettings.FolderSearchPattern, SearchOption.TopDirectoryOnly)
+                    .Where(f => new DirectoryInfo(f).CreationTimeUtc > startDatetime).ToList<string>();
+                    foreach (var folder in _subwatchFolder)
+                    {
+                        if (!folder.ToLower().Contains("new folder"))
+                        {
+                            watchFolders.Add(folder);
+                            Log.Information($"Found folder to watch, but might be already watching! : {folder}");
+                        }
+
+                    }
+                }
+                else
+                {
+                    Log.Information($"Folder not found to watch!!!!!! : {subministrypath}");
+                }
+
+            }
+
             return watchFolders;
         }
     }

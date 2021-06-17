@@ -13,6 +13,8 @@ namespace MCS.FOI.FileConversion.Utilities
        
         public static string BaseWatchPath { get; set; }
 
+        public static string[] MinistryIncomingPaths { get; set; }
+
         public static string FolderSearchPattern { get; set; }
 
         public static int FailureAttemptCount { get; set; }
