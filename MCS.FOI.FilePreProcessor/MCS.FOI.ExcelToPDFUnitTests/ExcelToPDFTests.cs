@@ -2,25 +2,44 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MCS.FOI.ExcelToPDF;
 using System.IO;
+using System;
 
 namespace MCS.FOI.ExcelToPDFUnitTests
 {
     [TestClass]
     public class ExcelToPDFTests
     {
+        public ExcelToPDFTests()
+        {
+            checkSourceRootPathENVVAR();
+        }
 
-
-
+        private void checkSourceRootPathENVVAR()
+        {
+            //#if DEBUG
+            //    Environment.SetEnvironmentVariable("SourceRootPath","");//Enter local path, if required on debug execution.
+            //#endif
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SourceRootPath")))
+            {
+                var errorENV = "SourceRootPath ENV VAR missing!";
+                Console.WriteLine(errorENV);
+                Assert.Fail(errorENV);
+            }
+        }
         [TestMethod]
         public void XLSConvertToPDFTest()
         {
-
+            checkSourceRootPathENVVAR();
+            bool isconverted;
+            string message = string.Empty;
             ExcelFileProcessor excelFileProcessor = new ExcelFileProcessor();
             excelFileProcessor.ExcelFileName = "bc_fin_2021_supplement_estimates.xls";
             excelFileProcessor.ExcelSourceFilePath = getExcelRootFolder();
             excelFileProcessor.IsSinglePDFOutput = true;
+            excelFileProcessor.FailureAttemptCount = 5;
+            excelFileProcessor.WaitTimeinMilliSeconds = 4000;
             excelFileProcessor.PdfOutputFilePath = Path.Combine(getExcelRootFolder(), "output");
-            bool isconverted = excelFileProcessor.ConvertToPDF();
+            (isconverted, message, excelFileProcessor.PdfOutputFilePath) = excelFileProcessor.ConvertToPDF();
 
             Assert.IsTrue(isconverted == true, $"Excel to PDF Conversion failed for {excelFileProcessor.ExcelFileName}");
 
@@ -34,13 +53,17 @@ namespace MCS.FOI.ExcelToPDFUnitTests
         [TestMethod]
         public void XLSXConvertToPDFTest()
         {
-
+            checkSourceRootPathENVVAR();
+            bool isconverted, isconverted1;
+            string message = string.Empty;
             ExcelFileProcessor excelFileProcessor = new ExcelFileProcessor();
             excelFileProcessor.ExcelFileName = "capbudg.xlsx";
             excelFileProcessor.ExcelSourceFilePath = getExcelRootFolder();
             excelFileProcessor.IsSinglePDFOutput = true;
+            excelFileProcessor.FailureAttemptCount = 5;
+            excelFileProcessor.WaitTimeinMilliSeconds = 4000;
             excelFileProcessor.PdfOutputFilePath = Path.Combine(getExcelRootFolder(), "output");
-            bool isconverted = excelFileProcessor.ConvertToPDF();
+            (isconverted, message, excelFileProcessor.PdfOutputFilePath) = excelFileProcessor.ConvertToPDF();
 
             Assert.IsTrue(isconverted == true, $"Excel to PDF Conversion failed for {excelFileProcessor.ExcelFileName}");
 
@@ -53,8 +76,10 @@ namespace MCS.FOI.ExcelToPDFUnitTests
             excelFileProcessor1.ExcelFileName = "IRIS Export - Masked.xlsx";
             excelFileProcessor1.ExcelSourceFilePath = getExcelRootFolder();
             excelFileProcessor1.IsSinglePDFOutput = true;
+            excelFileProcessor1.FailureAttemptCount = 5;
+            excelFileProcessor1.WaitTimeinMilliSeconds = 4000;
             excelFileProcessor1.PdfOutputFilePath = Path.Combine(getExcelRootFolder(), "output");
-            bool isconverted1 = excelFileProcessor1.ConvertToPDF();
+            (isconverted1, message, excelFileProcessor.PdfOutputFilePath) = excelFileProcessor1.ConvertToPDF();
 
             Assert.IsTrue(isconverted1 == true, $"Excel to PDF Conversion failed for {excelFileProcessor1.ExcelFileName}");
 
@@ -68,13 +93,17 @@ namespace MCS.FOI.ExcelToPDFUnitTests
         [TestMethod]
         public void ProblematicXLSX1ConvertToPDFTest()
         {
-
+            checkSourceRootPathENVVAR();
+            bool isconverted;
+            string message = string.Empty;
             ExcelFileProcessor excelFileProcessor = new ExcelFileProcessor();
             excelFileProcessor.ExcelFileName = "IRIS Export - Masked.xlsx";
             excelFileProcessor.ExcelSourceFilePath = getExcelRootFolder();
             excelFileProcessor.IsSinglePDFOutput = true;
+            excelFileProcessor.FailureAttemptCount = 5;
+            excelFileProcessor.WaitTimeinMilliSeconds = 4000;
             excelFileProcessor.PdfOutputFilePath = Path.Combine(getExcelRootFolder(), "output");
-            bool isconverted = excelFileProcessor.ConvertToPDF();
+            (isconverted, message, excelFileProcessor.PdfOutputFilePath) = excelFileProcessor.ConvertToPDF();
 
             Assert.IsTrue(isconverted == true, $"Excel to PDF Conversion failed for {excelFileProcessor.ExcelFileName}");
 
@@ -84,30 +113,23 @@ namespace MCS.FOI.ExcelToPDFUnitTests
 
         }
 
-        [TestMethod]
-        public void ProblematicXLSX2ConvertToPDFTest()
-        {
-
-            ExcelFileProcessor excelFileProcessor = new ExcelFileProcessor();
-            excelFileProcessor.ExcelFileName = "Excel File 2.xlsx";
-            excelFileProcessor.ExcelSourceFilePath = getExcelRootFolder();
-            excelFileProcessor.IsSinglePDFOutput = false;
-            excelFileProcessor.PdfOutputFilePath = Path.Combine(getExcelRootFolder(), "output");
-            bool isconverted = excelFileProcessor.ConvertToPDF();
-
-            Assert.IsTrue(isconverted == true, $"Excel to PDF Conversion failed for {excelFileProcessor.ExcelFileName}");
-        }
+        
 
         [TestMethod]
         public void FolderLevelSetupExcelToPdfTest()
         {
+            checkSourceRootPathENVVAR();
+            bool isconverted;
+            string message = string.Empty;
             string rootLocation = getExcelRootFolder();
             ExcelFileProcessor excelFileProcessor = new ExcelFileProcessor();
             excelFileProcessor.ExcelFileName = "capbudg.xlsx";
             excelFileProcessor.ExcelSourceFilePath = string.Concat(rootLocation, @"\Folder2\Folder21\Folder211\");
             excelFileProcessor.IsSinglePDFOutput = true;
+            excelFileProcessor.FailureAttemptCount = 5;
+            excelFileProcessor.WaitTimeinMilliSeconds = 4000;
             excelFileProcessor.PdfOutputFilePath = string.Concat(rootLocation, @"\output\", excelFileProcessor.ExcelSourceFilePath.Replace(rootLocation,""));
-            bool isconverted = excelFileProcessor.ConvertToPDF();
+            (isconverted, message, excelFileProcessor.PdfOutputFilePath) = excelFileProcessor.ConvertToPDF();
 
             Assert.IsTrue(isconverted == true, $"Excel to PDF Conversion failed for {excelFileProcessor.ExcelFileName}");
 
@@ -119,10 +141,7 @@ namespace MCS.FOI.ExcelToPDFUnitTests
 
         private string getExcelRootFolder()
         {
-            string unittestexecutionDirectory = Directory.GetCurrentDirectory();
-            string approot = unittestexecutionDirectory.Replace(@"\bin\Debug\netcoreapp3.1", "");
-            return Path.Combine(approot, "SourceExcel");
-
+            return Environment.GetEnvironmentVariable("SourceRootPath");
         }
     }
 }

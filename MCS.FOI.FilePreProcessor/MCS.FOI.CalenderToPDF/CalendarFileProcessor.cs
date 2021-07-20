@@ -4,19 +4,56 @@ using Syncfusion.Pdf;
 using System;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace MCS.FOI.CalenderToPDF
 {
+    /// <summary>
+    /// Calendar files (.ics) are processed and converted to pdf using syncfusion libraries
+    /// </summary>
     public class CalendarFileProcessor : ICalendarFileProcessor
     {
 
+        /// <summary>
+        /// Source iCalendar Path, this will be full path including sub folders/ directories
+        /// </summary>
         public string SourcePath { get; set; }
 
+        /// <summary>
+        /// PDF output path with sub folder(s) path
+        /// </summary>
         public string DestinationPath { get; set; }
 
+        /// <summary>
+        /// Wait in Milli seconds before trying next attempt
+        /// </summary>
+        public int FailureAttemptCount { get; set; }
+
+        /// <summary>
+        /// Wait in Milli seconds before trying next attempt
+        /// </summary>
+        public int WaitTimeinMilliSeconds { get; set; }
+
+        /// <summary>
+        /// Source file name with extension
+        /// </summary>
         public string FileName { get; set; }
+
+
+        /// <summary>
+        /// Deployment platform - Linux/Windows
+        /// </summary>
+        public Platform DeploymentPlatform { get; set; }
+
+        /// <summary>
+        /// Syncfusion binary path for qt webkit. Required for conversion from HTML to PDF
+        /// </summary>
+        public string HTMLtoPdfWebkitPath { get; set; }
+
+        /// <summary>
+        /// Success/Failure message
+        /// </summary>
+        public string Message { get; set; }
         public CalendarFileProcessor()
         {
 
@@ -26,50 +63,60 @@ namespace MCS.FOI.CalenderToPDF
             this.SourcePath = sourcePath;
             this.DestinationPath = destinationPath;
             this.FileName = fileName;
+            this.Message = string.Empty;
 
         }
 
-        public bool ProcessCalendarFiles()
+        public (bool, string, string) ProcessCalendarFiles()
         {
             bool isProcessed;
+            
             try
             {
                 string htmlString = ConvertCalendartoHTML();
-                isProcessed = ConvertHTMLtoPDF(htmlString);
+                isProcessed = ConvertHTMLtoPDF(htmlString);       
             }
             catch (Exception ex)
             {
                 throw (ex);
             }
-            return isProcessed;
+            return (isProcessed, Message, DestinationPath);
         }
+
+        /// <summary>
+        /// Converts iCalendar to HTML
+        /// </summary>
+        /// <returns>HTML as a string</returns>
         private string ConvertCalendartoHTML()
         {
-            FileStream fileStream = null;
+           
             try
             {
                 string ical = string.Empty;
                 string sourceFile = Path.Combine(SourcePath, FileName);
                 if (File.Exists(sourceFile))
                 {
-                    for (int attempt = 1; attempt < 5; attempt++)
+                    for (int attempt = 1; attempt < FailureAttemptCount; attempt++)
                     {
-                        Thread.Sleep(5000);
+                        
                         try
                         {
-                            fileStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read);
+                            using (FileStream fileStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read))
+                            {
+                                using (StreamReader sr = new StreamReader(fileStream))
+                                {
+                                    ical = sr.ReadToEnd();
+                                }
+                            }
+                            break;
                         }
                         catch (Exception e)
                         {
                             Console.WriteLine($"Exception happened while accessing File {sourceFile}, re-attempting count : {attempt}");
-                            fileStream = null;
-
+                            Thread.Sleep(WaitTimeinMilliSeconds);
                         }
                     }
-                    using (StreamReader sr = new StreamReader(fileStream))
-                    {
-                        ical = sr.ReadToEnd();
-                    }
+                   
                     Calendar calendar = Calendar.Load(ical);
                     var events = calendar.Events;
                     StringBuilder htmlString = new StringBuilder();
@@ -175,15 +222,17 @@ namespace MCS.FOI.CalenderToPDF
             {
                 string error = $"Exception Occured while coverting file at {SourcePath} to HTML , exception :  {ex.Message} , stacktrace : {ex.StackTrace}";
                 Console.WriteLine(error);
+                Message = error;
                 return error;
             }
-            finally
-            {
-                if (fileStream != null)
-                    fileStream.Dispose();
-            }
+            
         }
 
+        /// <summary>
+        /// Converts HTML string to PDF using syncfution library and webkit
+        /// </summary>
+        /// <param name="strHTML">HTML string</param>
+        /// <returns>true - if converted successfully, else false</returns>
         private bool ConvertHTMLtoPDF(string strHTML)
         {
             bool isConverted;
@@ -195,10 +244,9 @@ namespace MCS.FOI.CalenderToPDF
 
                 WebKitConverterSettings webKitConverterSettings = new WebKitConverterSettings() { EnableHyperLink = true };
 
-                //TODO: The path needs to be replaced with @"/QtBinariesLinux"; when containerizing the code
-                //string path = @"" + Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName + "\\QtBinariesWindows";
-                string path = @"" + Environment.CurrentDirectory + "\\QtBinariesWindows";
-                webKitConverterSettings.WebKitPath = path; // $@"/QtBinariesLinux";
+                //Point to the webkit based on the platform the application is running
+                 webKitConverterSettings.WebKitPath = HTMLtoPdfWebkitPath;
+               
 
                 //Assign WebKit converter settings to HTML converter
                 htmlConverter.ConverterSettings = webKitConverterSettings;
@@ -207,7 +255,7 @@ namespace MCS.FOI.CalenderToPDF
                 htmlConverter.ConverterSettings.PdfPageSize = PdfPageSize.A4;
 
                 //Convert HTML string to PDF
-                PdfDocument document = htmlConverter.Convert(strHTML, SourcePath);
+                PdfDocument document = htmlConverter.Convert(strHTML, "");
 
                 CreateOutputFolder();
                 string outputPath = Path.Combine(DestinationPath, $"{Path.GetFileNameWithoutExtension(FileName)}.pdf");
@@ -218,12 +266,14 @@ namespace MCS.FOI.CalenderToPDF
                 document.Close(true);
 
                 isConverted = true;
+                Message = $"{SourcePath}\\{FileName} processed successfully!";
             }
             catch (Exception ex)
             {
                 isConverted = false;
                 string error = $"Exception Occured while coverting file at {SourcePath} to PDF , exception :  {ex.Message} , stacktrace : {ex.StackTrace}";
                 Console.WriteLine(error);
+                Message = error;
             }
             finally
             {
@@ -232,12 +282,20 @@ namespace MCS.FOI.CalenderToPDF
             }
             return isConverted;
         }
-
+        /// <summary>
+        /// Creates the output folder with sub folders if any
+        /// </summary>
         private void CreateOutputFolder()
         {
             if (!Directory.Exists(DestinationPath))
                 Directory.CreateDirectory(DestinationPath);
         }
 
+    }
+
+    public enum Platform
+    {
+        Linux = 0,
+        Windows = 1
     }
 }
