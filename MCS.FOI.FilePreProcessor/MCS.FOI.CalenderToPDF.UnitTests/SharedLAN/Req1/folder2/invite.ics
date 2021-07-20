@@ -1,0 +1,55 @@
+BEGIN:VCALENDAR
+PRODID:-//Google Inc//Google Calendar 70.9054//EN
+VERSION:2.0
+CALSCALE:GREGORIAN
+METHOD:REQUEST
+BEGIN:VEVENT
+DTSTART:20201118T210000Z
+DTEND:20201118T220000Z
+DTSTAMP:20201116T211248Z
+ORGANIZER;CN=richard.sweeting@aot-technologies.com:mailto:richard.sweeting@
+ aot-technologies.com
+UID:3kkd249mn7teurih5eo8kvl4n5@google.com
+ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=
+ TRUE;CN=henry.oforeh@aot-technologies.com;X-NUM-GUESTS=0:mailto:henry.ofore
+ h@aot-technologies.com
+ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=OPT-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=
+ TRUE;CN=praveen@aot-technologies.com;X-NUM-GUESTS=0:mailto:praveen@aot-tech
+ nologies.com
+ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=
+ TRUE;CN=avanti.c@aot-technologies.com;X-NUM-GUESTS=0:mailto:avanti.c@aot-te
+ chnologies.com
+ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=OPT-PARTICIPANT;PARTSTAT=ACCEPTED;RSVP=TRUE
+ ;CN=richard.sweeting@aot-technologies.com;X-NUM-GUESTS=0:mailto:richard.swe
+ eting@aot-technologies.com
+ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=
+ TRUE;CN=patrick.fewtrell@aot-technologies.com;X-NUM-GUESTS=0:mailto:patrick
+ .fewtrell@aot-technologies.com
+ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=
+ TRUE;CN=divya.v@aot-technologies.com;X-NUM-GUESTS=0:mailto:divya.v@aot-tech
+ nologies.com
+ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=
+ TRUE;CN=nikhila.pankaj@aot-technologies.com;X-NUM-GUESTS=0:mailto:nikhila.p
+ ankaj@aot-technologies.com
+ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=
+ TRUE;CN=jon.strembiski@se.com;X-NUM-GUESTS=0:mailto:jon.strembiski@se.com
+X-MICROSOFT-CDO-OWNERAPPTID:1908868772
+CREATED:20201116T211240Z
+DESCRIPTION:-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~
+ :~:~:~:~:~:~:~:~::~:~::-\nPlease do not edit this section of the descriptio
+ n.\n\nThis event has a video call.\nJoin: https://meet.google.com/vpz-ywng-
+ ktx\n(CA) +1 289-316-6865 PIN: 369502640#\nView more phone numbers: https:/
+ /tel.meet/vpz-ywng-ktx?pin=3581442009693&hs=7\n\nView your event at https:/
+ /calendar.google.com/calendar/event?action=VIEW&eid=M2trZDI0OW1uN3RldXJpaDV
+ lbzhrdmw0bjUgZGl2eWEudkBhb3QtdGVjaG5vbG9naWVzLmNvbQ&tok=MzcjcmljaGFyZC5zd2V
+ ldGluZ0Bhb3QtdGVjaG5vbG9naWVzLmNvbTMwNTUyMzg5NzA1MmU3MDUyN2RmZGVkNWI5NzBlOW
+ M3M2YwZGI3MjU&ctz=America%2FVancouver&hl=en&es=1.\n-::~:~::~:~:~:~:~:~:~:~:
+ ~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-
+LAST-MODIFIED:20201116T211242Z
+LOCATION:
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:AOT Schneider Electric team meeting
+TRANSP:OPAQUE
+END:VEVENT
+END:VCALENDAR
