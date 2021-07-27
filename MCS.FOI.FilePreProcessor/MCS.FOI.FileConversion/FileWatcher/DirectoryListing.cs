@@ -30,7 +30,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
                 if (Directory.Exists(String.Concat(baseSharedPath, subministrypath)))
                 {
                     List<string> _subwatchFolder = Directory.GetDirectories(String.Concat(baseSharedPath, subministrypath), ConversionSettings.FolderSearchPattern, SearchOption.TopDirectoryOnly)
-                    .Where(f => new DirectoryInfo(f).CreationTimeUtc > startDatetime).ToList<string>();
+                    .Where(f => new DirectoryInfo(f).CreationTimeUtc > startDatetime && new DirectoryInfo(f).Name != ConversionSettings.CFRArchiveFoldertoSkip).ToList<string>();
                     foreach (var folder in _subwatchFolder)
                     {
                         if (!folder.ToLower().Contains("new folder"))

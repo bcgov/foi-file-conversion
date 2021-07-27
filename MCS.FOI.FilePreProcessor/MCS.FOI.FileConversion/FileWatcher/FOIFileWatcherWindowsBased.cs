@@ -84,40 +84,43 @@ namespace MCS.FOI.FileConversion.FileWatcher
             string message = string.Empty;
             string outputPath = string.Empty;
 
-            // Async File Conversion component based on extension.
-            Task.Run(() =>
+
+            if (fileInfo.Exists && !e.FullPath.Contains("\\~$"))
             {
-                if (fileInfo != null)
+                // Async File Conversion component based on extension.
+                Task.Run(() =>
                 {
-                    watcherLogger.TryAdd(fileInfo.FullName,(fileInfo.CreationTimeUtc, "Created", null, message, outputPath));
-                    extension = fileInfo.Extension;
+                    if (fileInfo != null)
+                    {
+                        watcherLogger.TryAdd(fileInfo.FullName, (fileInfo.CreationTimeUtc, "Created", null, message, outputPath));
+                        extension = fileInfo.Extension;
 
                     //Condition check for File Extension for triggering File Conversion logic
                     switch (extension)
-                    {
-                        case FileExtensions.xls:
-                        case FileExtensions.xlsx:
-                            watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "In Progress", null, message, outputPath);
-                            (isProcessed, message, outputPath) = ProcessExcelFiles(fileInfo); // Calling Excel Conversion Logic
+                        {
+                            case FileExtensions.xls:
+                            case FileExtensions.xlsx:
+                                watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "In Progress", null, message, outputPath);
+                                (isProcessed, message, outputPath) = ProcessExcelFiles(fileInfo); // Calling Excel Conversion Logic
                             break;
-                        case FileExtensions.ics:
-                            watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "In Progress", null, message, outputPath);
-                            (isProcessed, message, outputPath) = ProcessCalendarFiles(fileInfo); // Calling ICalender Conversion Logic
+                            case FileExtensions.ics:
+                                watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "In Progress", null, message, outputPath);
+                                (isProcessed, message, outputPath) = ProcessCalendarFiles(fileInfo); // Calling ICalender Conversion Logic
                             break;
-                        default:
-                            break;
-                    }
-                    if(isProcessed)
-                        watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "Completed", DateTime.UtcNow, message, outputPath);
-                    else
-                        watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "Failed", DateTime.UtcNow, message, outputPath);
-                    
-                    CSVLogger.LogtoCSV(watcherLogger, logFilePath); //Logging the events into FileLogger , under /logs folder on the FOI Request Folder
-                }
-                
-            }).ConfigureAwait(false);
+                            default:
+                                break;
+                        }
+                        if (isProcessed)
+                            watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "Completed", DateTime.UtcNow, message, outputPath);
+                        else
+                            watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "Failed", DateTime.UtcNow, message, outputPath);
 
-            
+                        CSVLogger.LogtoCSV(watcherLogger, logFilePath); //Logging the events into FileLogger , under /logs folder on the FOI Request Folder
+                }
+
+                }).ConfigureAwait(false);
+
+            }
         }
 
         /// <summary>
