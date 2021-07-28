@@ -34,6 +34,9 @@
     <None Update="deployment\deleteservice.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="deployment\restartservice.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="deployment\stopservice.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

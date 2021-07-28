@@ -20,7 +20,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
     public class FOIFileWatcherWindowsBased
     {
         ConcurrentDictionary<string, (DateTime, string, DateTime?, string, string)> watcherLogger;  // Thread Safe concurrent dictionary to monitor/watch event for logging
-        FileSystemWatcher watcher;
+                                                                                                    // FileSystemWatcher watcher;
         private string PathToWatch { get; set; } // Path to the FOI request Folder
 
         private List<string> FileTypes { get; set; } //FileTypes (.xls,.xlsx , .ics) to be watched
@@ -30,7 +30,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
             this.PathToWatch = pathtowatch;
             this.FileTypes = fileTypes;
             this.watcherLogger = new ConcurrentDictionary<string, (DateTime, string, DateTime?, string, string)>();
-            
+
         }
 
         /// <summary>
@@ -40,10 +40,10 @@ namespace MCS.FOI.FileConversion.FileWatcher
         {
 
             Log.Information($"Started Watching new Folder Path! {this.PathToWatch}");
+
+
+            FileSystemWatcher watcher = new FileSystemWatcher(this.PathToWatch);
             
-            foreach (string fileType in FileTypes)
-            {
-                watcher = new FileSystemWatcher(this.PathToWatch);
                 watcher.NotifyFilter = NotifyFilters.Attributes
                                      | NotifyFilters.CreationTime
                                      | NotifyFilters.DirectoryName
@@ -53,18 +53,21 @@ namespace MCS.FOI.FileConversion.FileWatcher
                                      | NotifyFilters.Security
                                      | NotifyFilters.Size;
 
-                
+
                 watcher.Created += OnCreated;
                 watcher.Error += OnError;
 
-                watcher.Filter = $"*.{fileType}";
+
+                foreach (string fileType in FileTypes)
+                {
+                    watcher.Filters.Add($"*.{fileType}");
+                }
                 watcher.IncludeSubdirectories = true;
                 watcher.EnableRaisingEvents = true;
-            }
-
+            
         }
 
-       
+
         /// <summary>
         /// File Created event handled from FileSystemWatcher to invoke FileConversion Logic inside corresponding FileConversion Libraries
         /// </summary>
@@ -72,14 +75,14 @@ namespace MCS.FOI.FileConversion.FileWatcher
         /// <param name="e"></param>
         private void OnCreated(object sender, FileSystemEventArgs e)
         {
-            string extension = string.Empty;            
+            string extension = string.Empty;
             string value = $"Created: {e.FullPath}";
             Console.WriteLine(value);
             Console.WriteLine($"Path to watch is {this.PathToWatch}");
             Log.Information($"Created File Event for file Path! {e.FullPath}");
             string logFilePath = $"{e.FullPath.Replace(e.Name, "")}\\Log";
             FileInfo fileInfo = new FileInfo(e.FullPath);
-            
+
             bool isProcessed = false;
             string message = string.Empty;
             string outputPath = string.Empty;
@@ -95,18 +98,18 @@ namespace MCS.FOI.FileConversion.FileWatcher
                         watcherLogger.TryAdd(fileInfo.FullName, (fileInfo.CreationTimeUtc, "Created", null, message, outputPath));
                         extension = fileInfo.Extension;
 
-                    //Condition check for File Extension for triggering File Conversion logic
-                    switch (extension)
+                        //Condition check for File Extension for triggering File Conversion logic
+                        switch (extension)
                         {
                             case FileExtensions.xls:
                             case FileExtensions.xlsx:
                                 watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "In Progress", null, message, outputPath);
                                 (isProcessed, message, outputPath) = ProcessExcelFiles(fileInfo); // Calling Excel Conversion Logic
-                            break;
+                                break;
                             case FileExtensions.ics:
                                 watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "In Progress", null, message, outputPath);
                                 (isProcessed, message, outputPath) = ProcessCalendarFiles(fileInfo); // Calling ICalender Conversion Logic
-                            break;
+                                break;
                             default:
                                 break;
                         }
@@ -116,7 +119,7 @@ namespace MCS.FOI.FileConversion.FileWatcher
                             watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "Failed", DateTime.UtcNow, message, outputPath);
 
                         CSVLogger.LogtoCSV(watcherLogger, logFilePath); //Logging the events into FileLogger , under /logs folder on the FOI Request Folder
-                }
+                    }
 
                 }).ConfigureAwait(false);
 
