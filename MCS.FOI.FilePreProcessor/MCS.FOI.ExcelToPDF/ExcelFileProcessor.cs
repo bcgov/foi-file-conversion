@@ -84,8 +84,9 @@ namespace MCS.FOI.ExcelToPDF
                             {
                                 using (excelStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read))
                                 {
-                                    IWorkbook workbook = application.Workbooks.Open(excelStream,ExcelParseOptions.ParseWorksheetsOnDemand);
-                                  
+                                    
+                                    IWorkbook workbook = application.Workbooks.Open(excelStream, ExcelParseOptions.DoNotParsePivotTable);
+
                                     if (workbook.Worksheets.Count > 0)
                                     {
                                         if (!IsSinglePDFOutput) /// if not single output, then traverse through each sheet and make seperate o/p pdfs
@@ -94,7 +95,7 @@ namespace MCS.FOI.ExcelToPDF
                                             {
                                                 if (worksheet.Visibility == WorksheetVisibility.Visible)
                                                 {                                                   
-                                                    worksheet.UsedRange.AutofitRows();
+                                                    worksheet.UsedRange.AutofitRows();                                                    
                                                     saveToPdf(worksheet);
                                                 }
                                             }
@@ -113,7 +114,7 @@ namespace MCS.FOI.ExcelToPDF
                             }
                             catch(Exception e)
                             {
-                                message = $"Exception happened while accessing File {sourceFile}, re-attempting count : {attempt}";
+                                message = $"Exception happened while accessing File {sourceFile}, re-attempting count : {attempt} , Error Message : {e.Message} , Stack trace : {e.StackTrace}";
                                 Log.Error(message);
                                 Console.WriteLine(message);
                                 excelStream = null;
@@ -141,6 +142,7 @@ namespace MCS.FOI.ExcelToPDF
             return (converted, message, PdfOutputFilePath);
         }
 
+       
         /// <summary>
         /// Save to pdf method, based on input from Excel file - Workbook vs Worksheet
         /// </summary>
@@ -148,12 +150,18 @@ namespace MCS.FOI.ExcelToPDF
         private void saveToPdf(IWorksheet worksheet)
         {
             XlsIORenderer renderer = new XlsIORenderer();
+            
             if (!Directory.Exists(PdfOutputFilePath))
                 Directory.CreateDirectory(PdfOutputFilePath);
-            string outputFileName = Path.Combine(PdfOutputFilePath, $"{Path.GetFileNameWithoutExtension(ExcelFileName)}_{worksheet.Name}");
+
+            string _worksheetName = FileNameUtil.GetFormattedFileName(worksheet.Name); ;
+       
+            string outputFileName = Path.Combine(PdfOutputFilePath, $"{Path.GetFileNameWithoutExtension(ExcelFileName)}_{_worksheetName}");
+                      
             using var pdfDocument = renderer.ConvertToPDF(worksheet, new XlsIORendererSettings() { LayoutOptions = LayoutOptions.FitAllColumnsOnOnePage });
             using var stream = new FileStream($"{outputFileName}.pdf", FileMode.Create, FileAccess.Write);
-            pdfDocument.Compression = PdfCompressionLevel.Normal;
+            pdfDocument.PageSettings.Margins = new Syncfusion.Pdf.Graphics.PdfMargins() { All = 10 };
+            pdfDocument.Compression = PdfCompressionLevel.Normal;            
             pdfDocument.Save(stream);
             stream.Dispose();
 

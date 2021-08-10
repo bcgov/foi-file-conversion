@@ -31,6 +31,8 @@ namespace MCS.FOI.FileConversion.Utilities
 
         public static string FileWatcherStartDate { get; set; }
 
+        public static string CFRArchiveFoldertoSkip { get; set; }
+
     }
 
     public enum Platform

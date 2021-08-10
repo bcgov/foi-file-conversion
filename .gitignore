@@ -57,3 +57,4 @@ bld/
 /MCS.FOI.FilePreProcessor/MCS.FOI.ExcelToPDFUnitTests/SourceExcel/output
 /MCS.FOI.FilePreProcessor/MCS.FOI.FileConversion/shareddoc
 /MCS.FOI.FilePreProcessor/MCS.FOI.CalenderToPDF.UnitTests/SharedLAN/Req1/output
+/MCS.FOI.FilePreProcessor/.vs/*
