@@ -48,13 +48,13 @@ namespace MCS.FOI.FileConversion
                             if (ConversionSettings.DeploymentPlatform == Platform.Windows) // Check for deployment platform for invoking specific type of FileWatcher logic.
                             {
                                 //Invoking Windows based File Watcher
-                                var filewatcher = new FOIFileWatcherWindowsBased(folderpath, new List<string>() { "xls", "xlsx", "ics" });
+                                var filewatcher = new FOIFileWatcherWindowsBased(folderpath, new List<string>() { "xls", "xlsx", "ics","msg" });
                                 filewatcher.StartWatching();
                             }
                             else
                             {
                                 //Invoking Linux based File Watcher
-                                var filewatcher = new FOIFileWatcherLinuxBased(folderpath, new List<string>() { "xls", "xlsx", "ics" });
+                                var filewatcher = new FOIFileWatcherLinuxBased(folderpath, new List<string>() { "xls", "xlsx", "ics", "msg" });
                                 filewatcher.StartWatching();
                             }
 
