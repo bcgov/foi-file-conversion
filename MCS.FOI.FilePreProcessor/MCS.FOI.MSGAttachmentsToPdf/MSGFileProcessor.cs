@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MsgReader.Outlook;
+using Serilog;
 namespace MCS.FOI.MSGAttachmentsToPdf
 {
     public class MSGFileProcessor : IMSGFileProcessor
@@ -96,9 +97,10 @@ namespace MCS.FOI.MSGAttachmentsToPdf
                    
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                message = $"Error happened while moving attachments on {MSGSourceFilePath}\\{MSGFileName}";
+                Log.Error($"Error happened while moving attachments on {MSGSourceFilePath}\\{MSGFileName} , Exception message : {ex.Message} , details : {ex.StackTrace}");
+                message = $"Error happened while moving attachments on {MSGSourceFilePath}\\{MSGFileName} , Exception message : {ex.Message} , details : {ex.StackTrace}";
                 moved = false;
             }
 
