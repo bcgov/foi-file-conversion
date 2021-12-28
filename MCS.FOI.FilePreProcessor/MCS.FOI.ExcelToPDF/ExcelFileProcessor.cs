@@ -95,7 +95,7 @@ namespace MCS.FOI.ExcelToPDF
                                             {
                                                 if (worksheet.Visibility == WorksheetVisibility.Visible)
                                                 {                                                   
-                                                    worksheet.UsedRange.AutofitRows();                                                    
+                                                    //worksheet.UsedRange.AutofitRows();                                                    
                                                     saveToPdf(worksheet);
                                                 }
                                             }

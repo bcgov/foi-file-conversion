@@ -2,6 +2,7 @@
 using MCS.FOI.ExcelToPDF;
 using MCS.FOI.FileConversion.Logger;
 using MCS.FOI.FileConversion.Utilities;
+using MCS.FOI.MSGAttachmentsToPdf;
 using Serilog;
 using System;
 using System.Collections.Concurrent;
@@ -110,6 +111,10 @@ namespace MCS.FOI.FileConversion.FileWatcher
                                 watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "In Progress", null, message, outputPath);
                                 (isProcessed, message, outputPath) = ProcessCalendarFiles(fileInfo); // Calling ICalender Conversion Logic
                                 break;
+                            case FileExtensions.msg:
+                                watcherLogger[fileInfo.FullName] = (fileInfo.CreationTimeUtc, "In Progress", null, message, outputPath);
+                                (isProcessed, message, outputPath) = ProcessMSGFiles(fileInfo); // Calling MSG Attachment Logic
+                                break;
                             default:
                                 break;
                         }
@@ -165,6 +170,19 @@ namespace MCS.FOI.FileConversion.FileWatcher
             return calendarFileProcessor.ProcessCalendarFiles();
         }
 
+        private (bool, string, string) ProcessMSGFiles(FileInfo fileInfo)
+        {
+            string sourcePath = fileInfo.FullName.Replace(fileInfo.Name, "");
+            MSGFileProcessor msgFileProcessor = new MSGFileProcessor();
+            msgFileProcessor.MSGFileName = fileInfo.Name;
+            msgFileProcessor.IsSinglePDFOutput = false;
+            msgFileProcessor.MSGSourceFilePath = sourcePath;
+            msgFileProcessor.OutputFilePath = getPdfOutputPath(msgFileProcessor.MSGSourceFilePath);
+            msgFileProcessor.WaitTimeinMilliSeconds = ConversionSettings.WaitTimeInMilliSeconds;
+            msgFileProcessor.FailureAttemptCount = ConversionSettings.FailureAttemptCount;
+            return msgFileProcessor.MoveAttachments();
+        }
+
         private void OnError(object sender, ErrorEventArgs e) =>
             PrintException(e.GetException());
 
@@ -187,15 +205,19 @@ namespace MCS.FOI.FileConversion.FileWatcher
         /// </summary>
         /// <param name="excelsourcePath"></param>
         /// <returns></returns>
-        private string getPdfOutputPath(string excelsourcePath)
+        private string getPdfOutputPath(string sourcepath)
         {
-            if (!excelsourcePath.ToLower().Contains(@"\output\"))
+            if (!sourcepath.ToLower().Contains(@"\output\"))
             {
-                return string.Concat(this.PathToWatch, @"\output\", excelsourcePath.Replace(this.PathToWatch, ""));
+                return string.Concat(this.PathToWatch, @"\output\", sourcepath.Replace(this.PathToWatch, ""));
+            }
+            else if(sourcepath.ToLower().Contains(@"\msgattachments\"))
+            {
+                return string.Concat(sourcepath, @"\msgattachmentconversions\");
             }
             else
             {
-                return string.Concat(excelsourcePath, @"\calenderattachments\");
+                return string.Concat(sourcepath, @"\calenderattachments\");
             }
         }
     }
