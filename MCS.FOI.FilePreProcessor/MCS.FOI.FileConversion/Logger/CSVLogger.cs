@@ -14,7 +14,8 @@ namespace MCS.FOI.FileConversion.Logger
 
         public static string CreateCSV(string logFilePath)
         {
-            string fileName = $"{logFilePath}//log_{DateTime.Now:yyyyMMddHHmmssfff}.csv";
+            //string fileName = $"{logFilePath}//log_{DateTime.Now:yyyyMMddHHmmssfff}.csv";
+            string fileName = $"{logFilePath}//log.csv";
             if (!Directory.Exists(logFilePath))
                 Directory.CreateDirectory(logFilePath);
             if (!File.Exists(fileName))

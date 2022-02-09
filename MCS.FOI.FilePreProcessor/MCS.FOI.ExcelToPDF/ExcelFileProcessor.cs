@@ -67,6 +67,7 @@ namespace MCS.FOI.ExcelToPDF
         {
             bool converted = false;
             string message = string.Empty;
+            bool _isSinglePDFOutput = IsSinglePDFOutput;
             try
             {                
                 string sourceFile = Path.Combine(ExcelSourceFilePath, ExcelFileName);
@@ -75,7 +76,9 @@ namespace MCS.FOI.ExcelToPDF
                     using (ExcelEngine excelEngine = new ExcelEngine())
                     {
                         IApplication application = excelEngine.Excel;
-                       
+
+                        var excelparseoptions = ExcelParseOptions.DoNotParsePivotTable;
+
                         for (int attempt = 1; attempt < FailureAttemptCount; attempt++)
                         {
                             FileStream excelStream;
@@ -85,11 +88,11 @@ namespace MCS.FOI.ExcelToPDF
                                 using (excelStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read))
                                 {
                                     
-                                    IWorkbook workbook = application.Workbooks.Open(excelStream, ExcelParseOptions.DoNotParsePivotTable);
+                                    IWorkbook workbook = application.Workbooks.Open(excelStream, excelparseoptions);
 
                                     if (workbook.Worksheets.Count > 0)
                                     {
-                                        if (!IsSinglePDFOutput) /// if not single output, then traverse through each sheet and make seperate o/p pdfs
+                                        if (!_isSinglePDFOutput) /// if not single output, then traverse through each sheet and make seperate o/p pdfs
                                         {
                                             foreach (IWorksheet worksheet in workbook.Worksheets)
                                             {
@@ -119,6 +122,14 @@ namespace MCS.FOI.ExcelToPDF
                                 Console.WriteLine(message);
                                 excelStream = null;
                                 Thread.Sleep(WaitTimeinMilliSeconds);
+                                if(attempt >= 3 && attempt < 5 && attempt < FailureAttemptCount)
+                                {
+                                    excelparseoptions = ExcelParseOptions.ParseWorksheetsOnDemand;
+                                }                                
+                                else
+                                {
+                                    excelparseoptions = ExcelParseOptions.DoNotParsePivotTable;
+                                }
                             }
                         }
 
