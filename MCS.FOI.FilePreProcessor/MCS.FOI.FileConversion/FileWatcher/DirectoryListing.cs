@@ -19,9 +19,10 @@ namespace MCS.FOI.FileConversion.FileWatcher
     {
         public static List<string> GetRequestFoldersToWatch(string baseSharedPath)
         {
-            DateTime startDatetime = DateTime.MinValue; //default DateTime to starts with.
+            //DateTime startDatetime = DateTime.MinValue; //default DateTime to starts with.
+            //DateTime.TryParse(ConversionSettings.FileWatcherStartDate, out startDatetime); 
 
-            DateTime.TryParse(ConversionSettings.FileWatcherStartDate, out startDatetime);
+            DateTime startDatetime = DateTime.Now.AddDays(-1 * ConversionSettings.DayCountBehindToStart);
 
             List<string> watchFolders = new List<string>();
 
@@ -29,8 +30,8 @@ namespace MCS.FOI.FileConversion.FileWatcher
             {
                 if (Directory.Exists(String.Concat(baseSharedPath, subministrypath)))
                 {
-                    List<string> _subwatchFolder = Directory.GetDirectories(String.Concat(baseSharedPath, subministrypath), ConversionSettings.FolderSearchPattern, SearchOption.TopDirectoryOnly)
-                    .Where(f => new DirectoryInfo(f).CreationTimeUtc > startDatetime && new DirectoryInfo(f).Name != ConversionSettings.CFRArchiveFoldertoSkip).ToList<string>();
+                    List<string> _subwatchFolder = Directory.GetDirectories(String.Concat(baseSharedPath, subministrypath), ConversionSettings.FolderSearchPattern)
+                    .Where(f => new DirectoryInfo(f).CreationTimeUtc > startDatetime && new DirectoryInfo(f).Name != ConversionSettings.CFRArchiveFoldertoSkip && new DirectoryInfo(f).Name.StartsWith("_") == false).ToList<string>();
                     foreach (var folder in _subwatchFolder)
                     {
                         if (!folder.ToLower().Contains("new folder"))
